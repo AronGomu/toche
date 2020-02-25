@@ -1,3 +1,19 @@
-<div *ngFor="let card of cards">
-    <img src="../../assets/image/cards/{{card.img_url}}" alt="">
-</div>
+
+    <div class="container">
+
+        <div *ngFor="let card of decklist">
+            <a (dblclick)="removeCardFromDecklist($event)">
+                <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+            </a>
+        </div>
+
+        <input type="text" placeholder="Search for a card" (input)="onKeySearchByText($event)" [value]="searched">
+
+        <div *ngFor="let card of cards">
+            <a (click)="addCardToDecklist($event)">
+                <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+            </a>
+        </div>
+    </div>
+
+
