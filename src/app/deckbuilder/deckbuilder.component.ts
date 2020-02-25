@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import cardJson from '../../assets/cards.json'
+
 @Component({
   selector: 'app-deckbuilder',
   templateUrl: './deckbuilder.component.html',
@@ -7,7 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DeckbuilderComponent implements OnInit {
 
-  constructor() { }
+  public cards = cardJson;
+
+  constructor() { 
+    console.log('Reading local json files');
+    console.log(cardJson);
+  }
 
   ngOnInit(): void {
   }
