@@ -20,6 +20,7 @@ export class DeckbuilderComponent implements OnInit {
     this.searched = '';
     this.decklist = [];
     this.deckJson = {
+      oldname: "",
       name : "",
       cards : []
     }
@@ -32,26 +33,45 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   saveDeck() {
-    this._http.post<any>('http://localhost:3000/saveDeck', this.deckJson).subscribe((res) => {console.log("Response saveDeck : ");console.log(res);});
+    this._http.post<any>('http://localhost:3000/saveDeck', this.deckJson).subscribe((res) => {console.log("Response saveDeck : ");console.log(res);this.followingSaveDeck();});
+  }
+
+  followingSaveDeck() {
+
+    // Saving current list in allDecks
+    for (let i = 0; i < this.allDecks.length; i++) {
+      if (this.allDecks[i].name == this.deckJson.oldname) {
+        this.allDecks[i] = this.deckJson;
+      }
+    }
+
+    this.deckJson.oldname = this.deckJson.name;
   }
 
   deleteDeck() {
     this._http.post<any>('http://localhost:3000/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
   }
 
+  newDeck() {
+    let newDeck = {
+      oldname: "",
+      name: "",
+      cards: []
+    }
+    this.allDecks.push(newDeck);
+    this.deckJson = this.allDecks[this.allDecks.length-1];
+  }
+
   followingDeleteDeck() {
     for (let i = 0; i < this.allDecks.length; i++) {
       if (this.allDecks[i].name == this.deckJson.name) {
         this.allDecks.splice(i,1);
-        if (this.allDecks.length() > 0) {
-          this.deckJson.name = this.allDecks[i].name;
-          this.deckJson.cards = this.allDecks[i].cards;
+        if (this.allDecks.length > 0) {
+          this.deckJson = this.allDecks[i];
           this.decklist = this.allDecks[i].cards;
         }
         else {
-          this.deckJson.name = null;
-          this.deckJson.cards = [];
-          this.decklist = [];
+          this.setDeckJson(null, null, [], true);
         }
         break;
       }
@@ -62,21 +82,28 @@ export class DeckbuilderComponent implements OnInit {
     this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.setAllDecks(res, firstLoad)});
   }
 
+  setDeckJson(oldname: string, name: string, cards, modifyDecklist: boolean) {
+    this.deckJson.oldname = oldname;
+    this.deckJson.name = name;
+    this.deckJson.cards = cards;
+    if (modifyDecklist == true) {
+      this.decklist = cards;
+    }
+  }
+
   setAllDecks(res, firstLoad: boolean) {
     this.allDecks = res.decks;
     if (firstLoad == true) {
-      this.deckJson.name = res.currentDeck.name;
-      this.deckJson.cards = res.currentDeck.cards;
-      this.decklist = res.currentDeck.cards;
+      this.setDeckJson(res.currentDeck.name,res.currentDeck.name,res.currentDeck.cards, true);
     }
   }
 
   deckSelected(event) {
     for (let i = 0; i < this.allDecks.length; i++) {
       if (this.allDecks[i].name == event.target.value) {
-        this.deckJson.name = this.allDecks[i].name;
-        this.deckJson.cards = this.allDecks[i].cards;
-        this.decklist = this.allDecks[i].cards;
+        this.deckJson = this.allDecks[i];
+        this.decklist = this.deckJson.cards;
+        //this.setDeckJson(this.allDecks[i].name,this.allDecks[i].name,this.allDecks[i].cards, true);
         break;
       } 
     }

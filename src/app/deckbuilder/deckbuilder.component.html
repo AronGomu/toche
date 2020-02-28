@@ -13,7 +13,9 @@
         <input type="text" placeholder="Enter your deck name" [value]="deckJson.name" (input)="onKeyDeckName($event)">
         <button class="button" (click)="saveDeck()">Save Deck</button>
 
-        <button class="button" (click)="deleteDeck()">Delete</button>
+        <button class="button" (click)="deleteDeck()">Delete Deck</button>
+
+        <button class="button" (click)="newDeck()">New Deck</button>
         
 
         <div *ngFor="let card of decklist">

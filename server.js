@@ -14,6 +14,7 @@ app.use(cors());
 // batch of data tied to the server
 const serverData = {
   decksPath : 'data/decks/',
+  deckExtansion: '.tdk',
   currentDeckPath : 'data/temp/current_deck.tdk'
 }
 
@@ -48,7 +49,8 @@ app.get('/getDecks', function(req, res) {
     fs.readdir(serverData.decksPath, function(err, filenames) {
         filenames.forEach(function(filename) {
             deck = {
-                name: filename.replace('.tdk', ''),
+                oldname: filename.replace(serverData.deckExtansion, ''),
+                name: filename.replace(serverData.deckExtansion, ''),
                 cards: [],
             }
             deck.cards = JSON.parse(fs.readFileSync(serverData.decksPath + filename, 'utf8'));
@@ -58,12 +60,18 @@ app.get('/getDecks', function(req, res) {
     });
 })
 
+
 app.post('/saveDeck', function(req, res) {
+    let oldNameDeck = req.body.oldname;
     let nameDeck = req.body.name;
     let cardsList = req.body.cards;
 
+    if (oldNameDeck != nameDeck && oldNameDeck != "") {
+      fs.unlinkSync(serverData.decksPath + oldNameDeck + serverData.deckExtansion);
+    }
+
     // Save the deck
-    fs.writeFile("data/decks/" + nameDeck + ".tdk",JSON.stringify(cardsList), function(err) {
+    fs.writeFile(serverData.decksPath + nameDeck + serverData.deckExtansion, JSON.stringify(cardsList), function(err) {
         if (err) {
             console.error(err);
         }
@@ -85,7 +93,7 @@ app.post('/saveDeck', function(req, res) {
 
 app.post('/deleteDeck', function(req, res) {
   nameDeck = req.body.name;
-  fs.unlinkSync("data/decks/" + nameDeck + ".tdk");
+  fs.unlinkSync(serverData.decksPath + nameDeck + serverData.deckExtansion);
   return res.status(200).send({"message": "Deck deleted"});
 
   //return res.send(req.body);
