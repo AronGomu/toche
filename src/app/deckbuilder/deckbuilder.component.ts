@@ -9,22 +9,21 @@ import cardsJson from '../../assets/cards.json'
   styleUrls: ['./deckbuilder.component.scss']
 })
 export class DeckbuilderComponent implements OnInit {
-  public cards;
+  public cardsInSearchView;
   public decklist;
   public searched;
   public deckJson;
   public allDecks;
 
   constructor(private _http: HttpClient) { 
-    this.cards = cardsJson;
+    this.cardsInSearchView = cardsJson;
     this.searched = '';
     this.decklist = [];
     this.deckJson = {
       name : "",
       cards : []
     }
-    this.allDecks = this.getDecks();
-    console.log(this.allDecks);
+    this.getDecks(true);
 
   }
 
@@ -32,21 +31,62 @@ export class DeckbuilderComponent implements OnInit {
 
   }
 
-  saveDeck(event) {
-    this.deckJson.name = event.target[0].value; // Input must be at index 0 to work)
-    this._http.post<any>('http://localhost:3000/saveDeck', this.deckJson).subscribe((res) => {console.log(res);});
-
+  saveDeck() {
+    this._http.post<any>('http://localhost:3000/saveDeck', this.deckJson).subscribe((res) => {console.log("Response saveDeck : ");console.log(res);});
   }
 
-  getDecks() {
-    return this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log(res);});
+  deleteDeck() {
+    this._http.post<any>('http://localhost:3000/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
+  }
+
+  followingDeleteDeck() {
+    for (let i = 0; i < this.allDecks.length; i++) {
+      if (this.allDecks[i].name == this.deckJson.name) {
+        this.allDecks.splice(i,1);
+        if (this.allDecks.length() > 0) {
+          this.deckJson.name = this.allDecks[i].name;
+          this.deckJson.cards = this.allDecks[i].cards;
+          this.decklist = this.allDecks[i].cards;
+        }
+        else {
+          this.deckJson.name = null;
+          this.deckJson.cards = [];
+          this.decklist = [];
+        }
+        break;
+      }
+    }
+  }
+
+  getDecks(firstLoad: boolean) {
+    this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.setAllDecks(res, firstLoad)});
+  }
+
+  setAllDecks(res, firstLoad: boolean) {
+    this.allDecks = res.decks;
+    if (firstLoad == true) {
+      this.deckJson.name = res.currentDeck.name;
+      this.deckJson.cards = res.currentDeck.cards;
+      this.decklist = res.currentDeck.cards;
+    }
+  }
+
+  deckSelected(event) {
+    for (let i = 0; i < this.allDecks.length; i++) {
+      if (this.allDecks[i].name == event.target.value) {
+        this.deckJson.name = this.allDecks[i].name;
+        this.deckJson.cards = this.allDecks[i].cards;
+        this.decklist = this.allDecks[i].cards;
+        break;
+      } 
+    }
   }
 
   searchCardsByText(word: string) {
-    this.cards = [];
+    this.cardsInSearchView = [];
     cardsJson.forEach(element => {
       if (element.name.toLowerCase().search(word.toLowerCase()) != -1) {
-        this.cards.push(element);
+        this.cardsInSearchView.push(element);
       }
     });
   }
@@ -54,6 +94,10 @@ export class DeckbuilderComponent implements OnInit {
   onKeySearchByText(event: any) {
     this.searched = event.target.value;
     this.searchCardsByText(this.searched);
+  }
+
+  onKeyDeckName(event: any) {
+    this.deckJson.name = event.target.value;
   }
 
   getCardById(id: number) {
@@ -65,17 +109,40 @@ export class DeckbuilderComponent implements OnInit {
     return false;
   }
 
+  sortDeckById() {
+    let sortedDeck = [];
+    for (let i = 0; i< this.decklist.length; i++) {
+      if (sortedDeck.length < 1) {
+        sortedDeck.push(this.decklist[i]);
+      }
+      else {
+        for (let j = 0; j < sortedDeck.length; j++) {
+          if (this.decklist[i].id < sortedDeck[j].id) {
+            sortedDeck.splice(j,0,this.decklist[i]);
+            break;
+          }
+          else if (j == (sortedDeck.length)-1) {
+            sortedDeck.push(this.decklist[i]);
+            break;
+          }
+        }
+      }
+    }
+    this.decklist = sortedDeck;
+  }
+
   addCardToDecklist(event: any) {
     let cardToAdd = this.getCardById(event.target.id);
     if (cardToAdd) {
       this.decklist.push(cardToAdd);
-      this.deckJson.cards.push(parseInt(event.target.id));
+      this.deckJson.cards.push(cardToAdd);
+      this.sortDeckById();
     }
     else {
       console.error("NO CARD CORRESPOND TO THE GIVEN ID : " + event.target.id);
     }
-    console.log(this.deckJson);
   }
+  
 
   removeCardFromDecklist(event) {
     let cardRemoved = false;
@@ -94,7 +161,10 @@ export class DeckbuilderComponent implements OnInit {
         }
       }
     }
-    console.log(this.deckJson);
+  }
+
+  debug() {
+    console.log(this.deckJson.cards);
   }
 
 }

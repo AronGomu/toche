@@ -1,10 +1,19 @@
 
     <div class="container">
 
-        <form (ngSubmit)="saveDeck($event)" novalidate>
-            <input type="text" placeholder="Enter your deck name">
-            <button class="button" type="submit">Save</button>
-        </form>
+        <button class="button" (click)="debug()">Debug</button>
+
+        <select (change)="deckSelected($event)">
+            <option *ngFor="let deck of allDecks"
+                value="{{deck.name}}">
+                {{deck.name}}
+            </option>
+        </select>
+
+        <input type="text" placeholder="Enter your deck name" [value]="deckJson.name" (input)="onKeyDeckName($event)">
+        <button class="button" (click)="saveDeck()">Save Deck</button>
+
+        <button class="button" (click)="deleteDeck()">Delete</button>
         
 
         <div *ngFor="let card of decklist">
@@ -15,7 +24,7 @@
 
         <input type="text" placeholder="Search for a card" (input)="onKeySearchByText($event)" >
 
-        <div *ngFor="let card of cards">
+        <div *ngFor="let card of cardsInSearchView">
             <a (click)="addCardToDecklist($event)">
                 <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
             </a>
