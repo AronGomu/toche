@@ -12,17 +12,25 @@ export class DeckbuilderComponent implements OnInit {
   public cardsInSearchView;
   public decklist;
   public searched;
-  public deckJson;
   public allDecks;
+
+  public deckJson;
+
+  setDeckJson(oldname: string, name: string, cards, selected: boolean) {
+    this.deckJson.oldname = oldname;
+    this.deckJson.name = name;
+    this.deckJson.cards = cards;
+    this.deckJson.selected = selected;
+  }
 
   constructor(private _http: HttpClient) { 
     this.cardsInSearchView = cardsJson;
     this.searched = '';
-    this.decklist = [];
     this.deckJson = {
       oldname: "",
       name : "",
-      cards : []
+      cards : [],
+      selected : null
     }
     this.getDecks(true);
 
@@ -46,6 +54,10 @@ export class DeckbuilderComponent implements OnInit {
     }
 
     this.deckJson.oldname = this.deckJson.name;
+
+    if (this.allDecks.length < 1) {
+      this.allDecks.push(this.deckJson);
+    }
   }
 
   deleteDeck() {
@@ -53,13 +65,12 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   newDeck() {
-    let newDeck = {
-      oldname: "",
-      name: "",
-      cards: []
-    }
-    this.allDecks.push(newDeck);
-    this.deckJson = this.allDecks[this.allDecks.length-1];
+    console.log("New Deck");
+    this.setDeckJson("", "", [], true);
+    this.allDecks.push(this.deckJson);
+    this.defineSelectedForAllDecks();
+    console.log(this.deckJson);
+
   }
 
   followingDeleteDeck() {
@@ -68,7 +79,6 @@ export class DeckbuilderComponent implements OnInit {
         this.allDecks.splice(i,1);
         if (this.allDecks.length > 0) {
           this.deckJson = this.allDecks[i];
-          this.decklist = this.allDecks[i].cards;
         }
         else {
           this.setDeckJson(null, null, [], true);
@@ -79,31 +89,34 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   getDecks(firstLoad: boolean) {
-    this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.setAllDecks(res, firstLoad)});
+    this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
   }
 
-  setDeckJson(oldname: string, name: string, cards, modifyDecklist: boolean) {
-    this.deckJson.oldname = oldname;
-    this.deckJson.name = name;
-    this.deckJson.cards = cards;
-    if (modifyDecklist == true) {
-      this.decklist = cards;
-    }
-  }
-
-  setAllDecks(res, firstLoad: boolean) {
+  followingGetDecks(res) {
     this.allDecks = res.decks;
-    if (firstLoad == true) {
+    if (this.allDecks.length > 0) {
       this.setDeckJson(res.currentDeck.name,res.currentDeck.name,res.currentDeck.cards, true);
+      this.defineSelectedForAllDecks();
+    } else {
+      this.setDeckJson("", "", [],true);
     }
+  }
+
+  defineSelectedForAllDecks() {
+    this.allDecks.forEach(element => {
+      if (element.name == this.deckJson.name) {
+        element.selected = true;
+      }
+      else {
+        element.selected = false;
+      }
+    });
   }
 
   deckSelected(event) {
     for (let i = 0; i < this.allDecks.length; i++) {
       if (this.allDecks[i].name == event.target.value) {
         this.deckJson = this.allDecks[i];
-        this.decklist = this.deckJson.cards;
-        //this.setDeckJson(this.allDecks[i].name,this.allDecks[i].name,this.allDecks[i].cards, true);
         break;
       } 
     }
@@ -138,32 +151,38 @@ export class DeckbuilderComponent implements OnInit {
 
   sortDeckById() {
     let sortedDeck = [];
-    for (let i = 0; i< this.decklist.length; i++) {
+    for (let i = 0; i< this.deckJson.cards.length; i++) {
       if (sortedDeck.length < 1) {
-        sortedDeck.push(this.decklist[i]);
+        sortedDeck.push(this.deckJson.cards[i]);
       }
       else {
         for (let j = 0; j < sortedDeck.length; j++) {
-          if (this.decklist[i].id < sortedDeck[j].id) {
-            sortedDeck.splice(j,0,this.decklist[i]);
+          if (this.deckJson.cards[i].id < sortedDeck[j].id) {
+            sortedDeck.splice(j,0,this.deckJson.cards[i]);
             break;
           }
           else if (j == (sortedDeck.length)-1) {
-            sortedDeck.push(this.decklist[i]);
+            sortedDeck.push(this.deckJson.cards[i]);
             break;
           }
         }
       }
     }
-    this.decklist = sortedDeck;
+    console.log(sortedDeck);
+    console.log(this.deckJson);
+    this.deckJson.cards = sortedDeck;
+    console.log(this.deckJson);
   }
 
   addCardToDecklist(event: any) {
+    console.log("Try to add card");
+    console.log(this.deckJson);
     let cardToAdd = this.getCardById(event.target.id);
+    console.log(cardToAdd);
     if (cardToAdd) {
-      this.decklist.push(cardToAdd);
       this.deckJson.cards.push(cardToAdd);
       this.sortDeckById();
+      console.log("Card Added")
     }
     else {
       console.error("NO CARD CORRESPOND TO THE GIVEN ID : " + event.target.id);
@@ -173,25 +192,18 @@ export class DeckbuilderComponent implements OnInit {
 
   removeCardFromDecklist(event) {
     let cardRemoved = false;
-    for (let i = 0; i < this.decklist.length; i++) {
-      if (this.decklist[i].id == event.target.id) {
-        this.decklist.splice(i, 1);
+    for (let i = 0; i < this.deckJson.length; i++) {
+      if (this.deckJson[i].id == event.target.id) {
+        this.deckJson.splice(i, 1);
         cardRemoved = true;
         break;
-      }
-    }
-    if (cardRemoved == true) {
-      for (let i = 0; i < this.deckJson.cards.length; i++) {
-        if (this.deckJson.cards[i] == event.target.id) {
-          this.deckJson.cards.splice(i, 1);
-          break;
-        }
       }
     }
   }
 
   debug() {
-    console.log(this.deckJson.cards);
+    console.log(this.deckJson);
+    console.log(this.allDecks);
   }
 
 }

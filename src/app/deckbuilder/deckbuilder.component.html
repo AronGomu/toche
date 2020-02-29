@@ -5,7 +5,8 @@
 
         <select (change)="deckSelected($event)">
             <option *ngFor="let deck of allDecks"
-                value="{{deck.name}}">
+                [value]="deck.name"
+                [selected]="deck.selected">
                 {{deck.name}}
             </option>
         </select>
@@ -18,7 +19,7 @@
         <button class="button" (click)="newDeck()">New Deck</button>
         
 
-        <div *ngFor="let card of decklist">
+        <div *ngFor="let card of deckJson.cards">
             <a (dblclick)="removeCardFromDecklist($event)">
                 <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
             </a>

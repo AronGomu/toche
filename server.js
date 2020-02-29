@@ -29,10 +29,7 @@ app.get('/', function(req, res) {
 // Load Current Deck and all decks saved
 app.get('/getDecks', function(req, res) {
 
-	let currentDeck = {
-		name: null,
-		cards: []
-	}
+	let currentDeck;
 	try {
     	if (fs.existsSync(serverData.currentDeckPath)) {
 			currentDeck = JSON.parse(fs.readFileSync(serverData.currentDeckPath, 'utf8'));
@@ -41,51 +38,43 @@ app.get('/getDecks', function(req, res) {
       console.error(err)
   }
 
-    let data = {
-      'currentDeck': currentDeck,
-      'decks': []
-    }
+  let data = {
+    'currentDeck': currentDeck,
+    'decks': []
+  }
 
-    fs.readdir(serverData.decksPath, function(err, filenames) {
-        filenames.forEach(function(filename) {
-            deck = {
-                oldname: filename.replace(serverData.deckExtansion, ''),
-                name: filename.replace(serverData.deckExtansion, ''),
-                cards: [],
-            }
-            deck.cards = JSON.parse(fs.readFileSync(serverData.decksPath + filename, 'utf8'));
-            data.decks.push(deck);
-        });
-        res.status(200).send(data);
+  fs.readdir(serverData.decksPath, function(err, filenames) {
+      filenames.forEach(function(filename) {
+          deck = JSON.parse(fs.readFileSync(serverData.decksPath + filename, 'utf8'));
+          data.decks.push(deck);
+      });
+      res.status(200).send(data);
     });
 })
 
 
 app.post('/saveDeck', function(req, res) {
-    let oldNameDeck = req.body.oldname;
-    let nameDeck = req.body.name;
-    let cardsList = req.body.cards;
 
-    if (oldNameDeck != nameDeck && oldNameDeck != "") {
-      fs.unlinkSync(serverData.decksPath + oldNameDeck + serverData.deckExtansion);
-    }
+  req.body.selected = null;
 
-    // Save the deck
-    fs.writeFile(serverData.decksPath + nameDeck + serverData.deckExtansion, JSON.stringify(cardsList), function(err) {
-        if (err) {
-            console.error(err);
-        }
-    })
+  if (req.body.oldname != req.body.name && req.body.oldname != "" && req.body.oldname != null) {
+    fs.unlinkSync(serverData.decksPath + req.body.oldname + serverData.deckExtansion);
+  }
+
+  req.body.oldname = req.body.name;
 
     // Save the deck as current Deck
-    let currentDeck = {
-      name : nameDeck,
-      cards: cardsList
-    }
-    fs.writeFile(serverData.currentDeckPath,JSON.stringify(currentDeck), function(err) {
+    fs.writeFile(serverData.currentDeckPath,JSON.stringify(req.body), function(err) {
       if (err) {
           console.error(err);
       }
+    })
+
+    // Save the deck
+    fs.writeFile(serverData.decksPath + req.body.name + serverData.deckExtansion, JSON.stringify(req.body), function(err) {
+        if (err) {
+            console.error(err);
+        }
     })
 
     return res.status(200).send({"message": "Deck saved"});
