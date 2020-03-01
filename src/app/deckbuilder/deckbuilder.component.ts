@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'
+import { Router } from '@angular/router';
 
 import cardsJson from '../../assets/cards.json'
+import { GlobalConstants } from './../common/global-constant';
 
 @Component({
   selector: 'app-deckbuilder',
@@ -9,6 +11,9 @@ import cardsJson from '../../assets/cards.json'
   styleUrls: ['./deckbuilder.component.scss']
 })
 export class DeckbuilderComponent implements OnInit {
+
+  public globals;
+
   public cardsInSearchView;
   public decklist;
   public searched;
@@ -23,7 +28,14 @@ export class DeckbuilderComponent implements OnInit {
     this.deckJson.selected = selected;
   }
 
-  constructor(private _http: HttpClient) { 
+  constructor(private _http: HttpClient, private _router: Router) { 
+
+    if (GlobalConstants.username == null) {
+      this._router.navigate(['login'], {replaceUrl: true});
+      return;
+    }
+
+    this.globals = GlobalConstants;
     this.cardsInSearchView = cardsJson;
     this.searched = '';
     this.deckJson = {
@@ -32,7 +44,7 @@ export class DeckbuilderComponent implements OnInit {
       cards : [],
       selected : null
     }
-    this.getDecks(true);
+    this.getDecks();
 
   }
 
@@ -41,7 +53,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   saveDeck() {
-    this._http.post<any>('http://localhost:3000/saveDeck', this.deckJson).subscribe((res) => {console.log("Response saveDeck : ");console.log(res);this.followingSaveDeck();});
+    this._http.post<any>(GlobalConstants.apiURL + '/saveDeck', this.deckJson).subscribe((res) => {console.log("Response saveDeck : ");console.log(res);this.followingSaveDeck();});
   }
 
   followingSaveDeck() {
@@ -61,7 +73,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   deleteDeck() {
-    this._http.post<any>('http://localhost:3000/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
+    this._http.post<any>(GlobalConstants.apiURL +  '/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
   }
 
   newDeck() {
@@ -86,10 +98,12 @@ export class DeckbuilderComponent implements OnInit {
         break;
       }
     }
+    console.log(this.deckJson);
+    this.setCurrent();
   }
 
-  getDecks(firstLoad: boolean) {
-    this._http.get<any>("http://localhost:3000/getDecks").subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
+  getDecks() {
+    this._http.get<any>(GlobalConstants.apiURL + '/getDecks').subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
   }
 
   followingGetDecks(res) {
@@ -100,6 +114,10 @@ export class DeckbuilderComponent implements OnInit {
     } else {
       this.setDeckJson("", "", [],true);
     }
+  }
+
+  setCurrent() {
+    this._http.post<any>(GlobalConstants.apiURL + '/setCurrent', this.deckJson).subscribe((res) => {console.log("Response setCurrent : ");console.log(res);});
   }
 
   defineSelectedForAllDecks() {
