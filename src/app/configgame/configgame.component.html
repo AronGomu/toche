@@ -1,0 +1,10 @@
+
+<div class="container">
+    <select (change)="deckSelected($event)">
+        <option *ngFor="let deck of allDecks"
+            [value]="deck.name"
+            [selected]="deck.selected">
+            {{deck.name}}
+        </option>
+    </select>
+<div>
