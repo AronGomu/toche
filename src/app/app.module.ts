@@ -13,6 +13,8 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ConfiggameComponent } from './configgame/configgame.component';
 
+import { API } from './common/api';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,7 @@ import { ConfiggameComponent } from './configgame/configgame.component';
     FormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [API],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

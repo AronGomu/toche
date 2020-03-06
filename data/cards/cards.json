@@ -19,7 +19,7 @@
     "manacost": "U",
     "type": "Spell",
     "archetype": "Inia",
-    "attack": 2000,
-    "power": 1,
+    "attack": null,
+    "power": null,
     "img_url": "Écume Arc-en-ciel.jpg"
 }]

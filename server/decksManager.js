@@ -4,15 +4,34 @@ module.exports = function (app) {
 
 	// defining const & global variables 
   const decks = {
-    path : 'data/decks/',
+    pathCardsJson: 'data/cards/cards.json',
+    pathDeck : 'data/decks/',
     extansion: '.tdk',
     currentPath : 'data/temp/current_deck.tdk'
   }
   
   // API
+
+  // Load all cards
+  app.post('/getCards', function(req, res) {
+
+    let data = {
+			cards: []
+		}
+
+		try {
+			if (fs.existsSync(decks.currentPath)) {
+          data.cards = JSON.parse(fs.readFileSync(decks.pathCardsJson, 'utf8'));
+          res.status(200).send(data);
+			}
+		} catch(err) {
+      console.error(err)
+      res.status(200).send({message: err});
+		}
+  })
   
   // Load Current Deck and all decks saved
-  app.get('/getDecks', function(req, res) {
+  app.post('/getDecks', function(req, res) {
   
 		let currentDeck;
 		try {
@@ -28,9 +47,9 @@ module.exports = function (app) {
 			'decks': []
 		}
 		
-		fs.readdir(decks.path, function(err, filenames) {
+		fs.readdir(decks.pathDeck, function(err, filenames) {
 			filenames.forEach(function(filename) {
-				deck = JSON.parse(fs.readFileSync(decks.path + filename, 'utf8'));
+				deck = JSON.parse(fs.readFileSync(decks.pathDeck + filename, 'utf8'));
 				data.decks.push(deck);
 			});
 			res.status(200).send(data);
@@ -43,7 +62,7 @@ module.exports = function (app) {
 		req.body.selected = null;
   
     if (req.body.oldname != req.body.name && req.body.oldname != "" && req.body.oldname != null) {
-      fs.unlinkSync(decks.path + req.body.oldname + decks.extansion);
+      fs.unlinkSync(decks.pathDeck + req.body.oldname + decks.extansion);
     }
   
     req.body.oldname = req.body.name;
@@ -56,7 +75,7 @@ module.exports = function (app) {
       })
   
       // Save the deck
-      fs.writeFile(decks.path + req.body.name + decks.extansion, JSON.stringify(req.body), function(err) {
+      fs.writeFile(decks.pathDeck + req.body.name + decks.extansion, JSON.stringify(req.body), function(err) {
           if (err) {
               console.error(err);
           }
@@ -68,7 +87,7 @@ module.exports = function (app) {
   // Delete Deck
   app.post('/deleteDeck', function(req, res) {
     nameDeck = req.body.name;
-    fs.unlinkSync(decks.path + nameDeck + decks.extansion);
+    fs.unlinkSync(decks.pathDeck + nameDeck + decks.extansion);
     return res.status(200).send({"message": "Deck deleted"});
   });
 

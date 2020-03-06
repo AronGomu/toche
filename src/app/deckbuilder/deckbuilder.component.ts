@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router';
 
-import cardsJson from '../../assets/cards.json'
 import { GlobalConstants } from './../common/global-constant';
+
+import { Deck } from './../common/deck';
 
 @Component({
   selector: 'app-deckbuilder',
@@ -15,10 +16,10 @@ export class DeckbuilderComponent implements OnInit {
   public globals;
 
   public cardsInSearchView;
-  public decklist;
   public searched;
   public allDecks;
 
+  public cards;
   public deckJson;
 
   setDeckJson(oldname: string, name: string, cards, selected: boolean) {
@@ -29,14 +30,14 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   constructor(private _http: HttpClient, private _router: Router) { 
-
+    /* Temporary
     if (GlobalConstants.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
+    */
 
     this.globals = GlobalConstants;
-    this.cardsInSearchView = cardsJson;
     this.searched = '';
     this.deckJson = {
       oldname: "",
@@ -44,6 +45,7 @@ export class DeckbuilderComponent implements OnInit {
       cards : [],
       selected : null
     }
+    this.getCards();
     this.getDecks();
 
   }
@@ -77,11 +79,9 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   newDeck() {
-    console.log("New Deck");
     this.setDeckJson("", "", [], true);
     this.allDecks.push(this.deckJson);
     this.defineSelectedForAllDecks();
-    console.log(this.deckJson);
 
   }
 
@@ -103,7 +103,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   getDecks() {
-    this._http.get<any>(GlobalConstants.apiURL + '/getDecks').subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
+    this._http.post<any>(GlobalConstants.apiURL + '/getDecks', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
   }
 
   followingGetDecks(res) {
@@ -114,6 +114,16 @@ export class DeckbuilderComponent implements OnInit {
     } else {
       this.setDeckJson("", "", [],true);
     }
+  }
+
+  getCards() {
+    this._http.post<any>(GlobalConstants.apiURL + '/getCards', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetCards(res)});
+  }
+
+  followingGetCards(res) {
+    console.log(res);
+    this.cards = res.cards;
+    this.cardsInSearchView = res.cards;
   }
 
   setCurrent() {
@@ -142,7 +152,7 @@ export class DeckbuilderComponent implements OnInit {
 
   searchCardsByText(word: string) {
     this.cardsInSearchView = [];
-    cardsJson.forEach(element => {
+    this.cards.forEach(element => {
       if (element.name.toLowerCase().search(word.toLowerCase()) != -1) {
         this.cardsInSearchView.push(element);
       }
@@ -159,9 +169,9 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   getCardById(id: number) {
-    for (let i = 0; i < cardsJson.length; i++) {
-      if (cardsJson[i].id == id) {
-        return cardsJson[i];
+    for (let i = 0; i < this.cards.length; i++) {
+      if (this.cards[i].id == id) {
+        return this.cards[i];
       }
     }
     return false;
@@ -186,10 +196,7 @@ export class DeckbuilderComponent implements OnInit {
         }
       }
     }
-    console.log(sortedDeck);
-    console.log(this.deckJson);
     this.deckJson.cards = sortedDeck;
-    console.log(this.deckJson);
   }
 
   addCardToDecklist(event: any) {
@@ -210,9 +217,9 @@ export class DeckbuilderComponent implements OnInit {
 
   removeCardFromDecklist(event) {
     let cardRemoved = false;
-    for (let i = 0; i < this.deckJson.length; i++) {
-      if (this.deckJson[i].id == event.target.id) {
-        this.deckJson.splice(i, 1);
+    for (let i = 0; i < this.deckJson.cards.length; i++) {
+      if (this.deckJson.cards[i].id == parseInt(event.target.id)) {
+        this.deckJson.cards.splice(i, 1);
         cardRemoved = true;
         break;
       }
@@ -222,6 +229,7 @@ export class DeckbuilderComponent implements OnInit {
   debug() {
     console.log(this.deckJson);
     console.log(this.allDecks);
+    console.log(this.cards);
   }
 
 }
