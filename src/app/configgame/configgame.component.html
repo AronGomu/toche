@@ -1,5 +1,6 @@
 
 <div class="container">
+    <button (click)=debug()>debug</button>
     <select (change)="deckSelected($event)">
         <option *ngFor="let deck of allDecks"
             [value]="deck.name"
@@ -7,4 +8,5 @@
             {{deck.name}}
         </option>
     </select>
+    <button (click)=startGame()>Start</button>
 <div>
