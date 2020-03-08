@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 
 import { GlobalConstants } from './../common/global-constant';
 
+import { SocketioService } from './../services/socketio.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,7 +13,7 @@ import { GlobalConstants } from './../common/global-constant';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private _http: HttpClient, private _router: Router) { }
+  constructor(private _http: HttpClient, private _router: Router, private socketService: SocketioService) { }
 
   ngOnInit(): void {
   }
@@ -19,31 +21,33 @@ export class LoginComponent implements OnInit {
   onSubmitLogin(event) {
     let data =  {
       username: event.target[0].value,
-      password: event.target[1].value
+      //password: event.target[1].value
     }
 
-    if (data.username == null || data.password == null) {
-      this.alertOnLogin(data.username, data.password);
+    if (data.username == null || data.username == "") {
+      this.alertOnLogin(data.username);
       return;
     }
 
+    this.socketService.userLogin(data.username);
+
+    GlobalConstants.username = data.username;
+    
+    this._router.navigate(['menu']);
+    /*
     this._http.post<any>(GlobalConstants.apiURL + '/login', data).subscribe((res) => {
       console.log("Response login : ");
       console.log(res);
       this.followingLogin(data);
     });
+    */
     
     return;
   }
 
-  followingLogin(data) {
-    GlobalConstants.username = data.username;
-    console.log(GlobalConstants.username);
-    this._router.navigate(['menu']);
-    return;
-  }
+  
 
-  alertOnLogin(username, password) {
+  alertOnLogin(username) {
     return;
   }
 }

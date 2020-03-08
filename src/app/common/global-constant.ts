@@ -5,6 +5,8 @@ export class GlobalConstants {
 
     public static username: string = null;
 
-    public static currentDeck: Deck = null; 
+    public static connectedUsers: any[] = [];
+
+    public static currentDeck: Deck = null;
 
 }

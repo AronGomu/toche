@@ -10,6 +10,7 @@ module.exports = function (app) {
   // API
   
   // Save deck, will delete the old file even witth different name
+  /*
   app.post('/login', function(req, res) {
         
     let data = {
@@ -44,8 +45,9 @@ module.exports = function (app) {
     }
   
     return res.status(200).send(data);
-	});
-	
+  });
+  */
+	/*
 	app.post('/register', function(req, res) {
 
 		data = { is_valid: false };
@@ -73,5 +75,6 @@ module.exports = function (app) {
 		data.is_valid = true;
 		return res.status(200).send(data);
 
-	});
+  });
+  */
 }

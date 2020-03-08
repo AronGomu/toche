@@ -13,15 +13,12 @@ export class MenuComponent implements OnInit {
   globals;
 
   constructor(private _router : Router) {
-    console.log("Menu");
-    console.log(GlobalConstants.username);
     if (GlobalConstants.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
 
     this.globals = GlobalConstants;
-    console.log(GlobalConstants);
   }
 
   ngOnInit(): void {
