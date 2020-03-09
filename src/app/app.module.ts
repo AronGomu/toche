@@ -19,6 +19,8 @@ import { ConfiggameComponent } from './configgame/configgame.component';
 
 // Custom Services
 import {SocketioService} from './services/socketio.service';
+import { UserlistComponent } from './userlist/userlist.component';
+
 
 
 @NgModule({
@@ -31,6 +33,7 @@ import {SocketioService} from './services/socketio.service';
     LoginComponent,
     RegisterComponent,
     ConfiggameComponent,
+    UserlistComponent,
   ],
   imports: [
     BrowserModule,
