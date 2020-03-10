@@ -13,7 +13,7 @@ import { SocketioService } from './../services/socketio.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private _http: HttpClient, private _router: Router, private socketService: SocketioService) { }
+  constructor(private _http: HttpClient, private _router: Router, private socketService: SocketioService, private globalConstants: GlobalConstants) { }
 
   ngOnInit(): void {
   }
@@ -31,11 +31,11 @@ export class LoginComponent implements OnInit {
 
     this.socketService.userLogin(data.username);
 
-    GlobalConstants.username = data.username;
+    this.globalConstants.username = data.username;
     
     this._router.navigate(['menu']);
     /*
-    this._http.post<any>(GlobalConstants.apiURL + '/login', data).subscribe((res) => {
+    this._http.post<any>(this.globalConstants.apiURL + '/login', data).subscribe((res) => {
       console.log("Response login : ");
       console.log(res);
       this.followingLogin(data);

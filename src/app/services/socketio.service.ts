@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { environment } from './../../environments/environment';
 import * as io from 'socket.io-client';
 
+import { UserlistComponent } from './../userlist/userlist.component';
+
 import { GlobalConstants } from './../common/global-constant';
 
 @Injectable({
@@ -11,29 +13,22 @@ export class SocketioService {
 
   socket;
 
-  constructor() { }
+  constructor(private globalConstants: GlobalConstants) {}
 
   setupSocketConnection() {
+
     this.socket = io(environment.SOCKET_ENDPOINT);
 
     this.socket.on('user_did_login',(data) => {
-      console.log("before connect");
-      console.log(GlobalConstants.connectedUsers);
-      GlobalConstants.connectedUsers = data.alreadyConnectedUsers;
-      console.log("after connect");
-      console.log(GlobalConstants.connectedUsers);
+      this.globalConstants.connectedUsers = data.alreadyConnectedUsers;
     })
 
     this.socket.on('user_did_disconnect',(socketId) => {
-      console.log("before disconnect");
-      console.log(GlobalConstants.connectedUsers);
-      for (let i = 0; i < GlobalConstants.connectedUsers.length; i++) {
-        if (GlobalConstants.connectedUsers[i].socketId == socketId) {
-          GlobalConstants.connectedUsers.splice(i,1);
+      for (let i = 0; i < this.globalConstants.connectedUsers.length; i++) {
+        if (this.globalConstants.connectedUsers[i].socketId == socketId) {
+          this.globalConstants.connectedUsers.splice(i,1);
         }
       }
-      console.log("after disconnect");
-      console.log(GlobalConstants.connectedUsers);
     })
   }
 

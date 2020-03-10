@@ -19,6 +19,7 @@ import { ConfiggameComponent } from './configgame/configgame.component';
 
 // Custom Services
 import {SocketioService} from './services/socketio.service';
+import {GlobalConstants} from './common/global-constant';
 import { UserlistComponent } from './userlist/userlist.component';
 
 
@@ -41,7 +42,7 @@ import { UserlistComponent } from './userlist/userlist.component';
     FormsModule,
     HttpClientModule,
   ],
-  providers: [SocketioService],
+  providers: [SocketioService, GlobalConstants],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,7 +11,7 @@ import { GlobalConstants } from './../common/global-constant';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(private _http: HttpClient, private _router: Router) { }
+  constructor(private _http: HttpClient, private _router: Router, private globalConstants: GlobalConstants) { }
 
   ngOnInit(): void {
   }
@@ -27,7 +27,7 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this._http.post<any>(GlobalConstants.apiURL + '/register', data).subscribe((res) => {
+    this._http.post<any>(this.globalConstants.apiURL + '/register', data).subscribe((res) => {
       console.log("Response Register : ");
       console.log(res);
       this.followingRegister(res);
@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
   }
 
   followingRegister(res) {
-    //GlobalConstants.username = res.username;
+    //this.globalConstants.username = res.username;
     this._router.navigate(['login']);
     return;
   }

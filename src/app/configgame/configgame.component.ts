@@ -16,10 +16,10 @@ export class ConfiggameComponent implements OnInit {
   public allDecks: Deck[];
 
   public deckJson: Deck;
-  constructor(private _http: HttpClient, private _router: Router) {
+  constructor(private _http: HttpClient, private _router: Router, private globalConstants: GlobalConstants) {
     // Check if user is connected, redirect to login page if not
     /* Temporary
-    if (GlobalConstants.username == null) {
+    if (this.globalConstants.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
@@ -31,7 +31,7 @@ export class ConfiggameComponent implements OnInit {
   }
 
   getDecks() {
-    this._http.post<any>(GlobalConstants.apiURL + '/getDecks', null).subscribe((res) => {
+    this._http.post<any>(this.globalConstants.apiURL + '/getDecks', null).subscribe((res) => {
       console.log("Response getDecks : ");
       console.log(res);
       this.followingGetDecks(res)});
@@ -62,7 +62,7 @@ export class ConfiggameComponent implements OnInit {
   }
 
   startGame() {
-    GlobalConstants.currentDeck = this.deckJson;
+    this.globalConstants.currentDeck = this.deckJson;
     this._router.navigate(['game']);
 
   }

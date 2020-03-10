@@ -10,15 +10,12 @@ import { GlobalConstants } from './../common/global-constant';
 })
 export class MenuComponent implements OnInit {
 
-  globals;
-
-  constructor(private _router : Router) {
-    if (GlobalConstants.username == null) {
+  constructor(private _router : Router, public globalConstants: GlobalConstants) {
+    if (this.globalConstants.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
 
-    this.globals = GlobalConstants;
   }
 
   ngOnInit(): void {

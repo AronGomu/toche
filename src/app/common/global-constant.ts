@@ -1,13 +1,18 @@
 import {Deck} from './deck';
 import {User} from './user';
+import { Injectable } from '@angular/core';
+
+@Injectable()
 export class GlobalConstants {
 
-    public static apiURL: string = "http://localhost:3000";
+    public title: string = "toche";
 
-    public static username: string = null;
+    public apiURL: string = "http://localhost:3000";
 
-    public static connectedUsers: User[] = [];
+    public username: string = null;
 
-    public static currentDeck: Deck = null;
+    public connectedUsers: User[] = [];
+
+    public currentDeck: Deck = null;
 
 }
