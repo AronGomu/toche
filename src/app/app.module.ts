@@ -19,7 +19,7 @@ import { ConfiggameComponent } from './configgame/configgame.component';
 
 // Custom Services
 import {SocketioService} from './services/socketio.service';
-import {GlobalConstants} from './common/global-constant';
+import {GlobalConstants} from './shared/global-constant';
 import { UserlistComponent } from './userlist/userlist.component';
 
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { GlobalConstants } from './../common/global-constant';
+import { GlobalConstants } from '../shared/global-constant';
 
 @Component({
   selector: 'app-userlist',

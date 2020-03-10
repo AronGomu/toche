@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from './../common/global-constant';
+import { GlobalConstants } from '../shared/global-constant';
 
-import { Deck } from './../common/deck';
+import { Deck } from '../shared/deck';
 
 @Component({
   selector: 'app-configgame',

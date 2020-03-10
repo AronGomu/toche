@@ -4,7 +4,7 @@ import * as io from 'socket.io-client';
 
 import { UserlistComponent } from './../userlist/userlist.component';
 
-import { GlobalConstants } from './../common/global-constant';
+import { GlobalConstants } from '../shared/global-constant';
 
 @Injectable({
   providedIn: 'root'

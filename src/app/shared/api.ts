@@ -8,12 +8,12 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class API {
 
-    constructor(private _http: HttpClient) {
+    constructor(private _http: HttpClient, private globalConstants: GlobalConstants) {
 
     }
 
     getDecks(callback: (res: any) => any ) {
-        this._http.post<any>(GlobalConstants.apiURL + '/getDecks', {data: null}).subscribe((res) => {
+        this._http.post<any>(this.globalConstants.apiURL + '/getDecks', {data: null}).subscribe((res) => {
             console.log("Response getDecks : ");
             console.log(res);
             callback(res);
@@ -22,7 +22,7 @@ export class API {
       }
 
     getCards(callback: (res: any) => any ) {
-        this._http.post<any>(GlobalConstants.apiURL + '/getCards', {data: null}).subscribe((res) => {
+        this._http.post<any>(this.globalConstants.apiURL + '/getCards', {data: null}).subscribe((res) => {
             console.log("Response getCards : ");
             console.log(res);
             callback(res);
@@ -30,7 +30,7 @@ export class API {
     }
 
     saveDeck(deck: Deck, callback: (res: any) => any ) {
-        this._http.post<any>(GlobalConstants.apiURL + '/saveDeck', deck).subscribe((res) => {
+        this._http.post<any>(this.globalConstants.apiURL + '/saveDeck', deck).subscribe((res) => {
             console.log("Response saveDeck : ");
             console.log(res);
             callback(res);
