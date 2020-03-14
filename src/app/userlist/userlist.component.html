@@ -1,3 +1,6 @@
 <ul>
-    <li *ngFor="let user of globalConstants.connectedUsers">{{ user.username }}</li>
+    <li *ngFor="let user of globalConstants.connectedUsers">
+        <div>{{ user.username }}</div>
+        <button *ngIf="user.isNotMe" (click)="askChallenge($event)" id="{{ user.username }}">Défier !</button>
+    </li>
 </ul>

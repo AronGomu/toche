@@ -4,7 +4,7 @@ import * as io from 'socket.io-client';
 
 import { UserlistComponent } from './../userlist/userlist.component';
 
-import { GlobalConstants } from '../shared/global-constant';
+import { GlobalConstants } from './global-constant';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,14 @@ export class SocketioService {
 
     this.socket.on('user_did_login',(data) => {
       this.globalConstants.connectedUsers = data.alreadyConnectedUsers;
+      this.globalConstants.connectedUsers.forEach(element => {
+        if (element.username == this.globalConstants.username) {
+          element.isNotMe = false;
+        }
+        else {
+          element.isNotMe = true;
+        }
+      });
     })
 
     this.socket.on('user_did_disconnect',(socketId) => {
@@ -30,10 +38,33 @@ export class SocketioService {
         }
       }
     })
+
+    this.socket.on('gotChallengeProposition', (data) => {
+      console.log("working!");
+    })
   }
 
   userLogin(username) {
     this.socket.emit('user_login',username);
+  }
+
+  askChallenge(usernameAsked) {
+    let userAsked;
+    let userAsking;
+
+    this.globalConstants.connectedUsers.forEach(element => {
+      if (element.username == usernameAsked) {
+        userAsked = element;
+      } else if (element.username == this.globalConstants.username) {
+        userAsking = element;
+      }
+    });
+
+    let data = {
+      'userAsked': userAsked,
+      'userAsking': userAsking,
+    }
+    this.socket.emit('askChallenge',data);
   }
 
 }

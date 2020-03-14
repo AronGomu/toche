@@ -1,5 +1,5 @@
-import {Deck} from './deck';
-import {User} from './user';
+import {Deck} from '../shared/deck';
+import {User} from '../shared/user';
 import { Injectable } from '@angular/core';
 
 @Injectable()

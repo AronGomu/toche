@@ -20,13 +20,22 @@ module.exports = function (io) {
     socket.on('user_login', (username) => {
       userToAdd = {
         'socketId' : socket.id,
-        'username' : username
+        'username' : username,
+        'isNotMe' : null
       }
       ioData.usersConnected.push(userToAdd);
+
       data = {
         'alreadyConnectedUsers' : ioData.usersConnected
       }
       io.emit('user_did_login', data);
+    });
+
+    socket.on('askChallenge', (data) => {
+      console.log(data);
+      console.log(data.userAsked.socketId);
+      io.to(data.userAsked.socketId).emit('gotChallengeProposition', data);
+      //io.emit('gotChallengeProposition', data);
     });
 });
 }

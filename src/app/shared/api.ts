@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 
-import { GlobalConstants } from './global-constant';
+import { GlobalConstants } from '../services/global-constant';
 import { Deck } from './deck';
 import { Injectable } from '@angular/core';
 //import { Card } from './card';
