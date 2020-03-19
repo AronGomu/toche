@@ -8,5 +8,6 @@
             {{deck.name}}
         </option>
     </select>
-    <button (click)=startGame()>Start</button>
+    <span>{{infoRoom.roomCreator.username}} vs {{infoRoom.roomJoiner.username}}</span>
+    <button *ngIf="infoRoom.isCreator" (click)=startGame()>Start</button>
 <div>

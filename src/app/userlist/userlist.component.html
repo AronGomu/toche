@@ -1,6 +1,9 @@
 <ul>
-    <li *ngFor="let user of globalConstants.connectedUsers">
+    <li *ngFor="let user of userlist">
         <div>{{ user.username }}</div>
-        <button *ngIf="user.isNotMe" (click)="askChallenge($event)" id="{{ user.username }}">Défier !</button>
+        <button *ngIf="user.isNotMe" (click)="askChallenge($event.target.id)" id="{{ user.username }}">Défier !</button>
+        <button *ngIf="user.askedChallenge" (click)="acceptChallenge($event.target.id, true)" id="{{ user.username }}">Accepter</button>
+        <button *ngIf="user.askedChallenge" (click)="acceptChallenge($event.target.id, false)" id="{{ user.username }}">Refuser</button>
     </li>
+    <button (click)=debug()>Debug</button>
 </ul>

@@ -18,8 +18,9 @@ import { RegisterComponent } from './register/register.component';
 import { ConfiggameComponent } from './configgame/configgame.component';
 
 // Custom Services
-import {SocketioService} from './services/socketio.service';
-import {GlobalConstants} from './services/global-constant';
+import { SocketioService } from './services/socketio.service';
+import { GlobalVariables } from './services/globalVariables';
+import { GlobalFunctions } from './services/globalFunctions';
 import { UserlistComponent } from './userlist/userlist.component';
 
 
@@ -42,7 +43,7 @@ import { UserlistComponent } from './userlist/userlist.component';
     FormsModule,
     HttpClientModule,
   ],
-  providers: [SocketioService, GlobalConstants],
+  providers: [SocketioService, GlobalVariables, GlobalFunctions],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

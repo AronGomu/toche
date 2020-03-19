@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from '../services/global-constant';
+import { GlobalVariables } from '../services/globalVariables';
 
 @Component({
   selector: 'app-menu',
@@ -10,8 +10,8 @@ import { GlobalConstants } from '../services/global-constant';
 })
 export class MenuComponent implements OnInit {
 
-  constructor(private _router : Router, public globalConstants: GlobalConstants) {
-    if (this.globalConstants.username == null) {
+  constructor(private _router : Router, public globalVariables: GlobalVariables) {
+    if (this.globalVariables.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
@@ -19,6 +19,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.globalVariables.connectedUsers);
   }
 
 }

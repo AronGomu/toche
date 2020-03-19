@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from '../services/global-constant';
+import { GlobalVariables } from '../services/globalVariables';
 
-import { Deck } from '../shared/deck';
+import { Deck } from '../classes/deck';
 
 @Component({
   selector: 'app-deckbuilder',
@@ -29,9 +29,9 @@ export class DeckbuilderComponent implements OnInit {
     this.deckJson.selected = selected;
   }
 
-  constructor(private _http: HttpClient, private _router: Router, private globalConstants: GlobalConstants) { 
+  constructor(private _http: HttpClient, private _router: Router, private globalVariables: GlobalVariables) { 
     /* Temporary
-    if (this.globalConstants.username == null) {
+    if (this.globalVariables.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
@@ -53,7 +53,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   saveDeck() {
-    this._http.post<any>(this.globalConstants.apiURL + '/saveDeck', this.deckJson).subscribe((res) => {
+    this._http.post<any>(this.globalVariables.apiURL + '/saveDeck', this.deckJson).subscribe((res) => {
       console.log("Response saveDeck : ");
       console.log(res);
       this.followingSaveDeck();
@@ -77,7 +77,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   deleteDeck() {
-    this._http.post<any>(this.globalConstants.apiURL +  '/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
+    this._http.post<any>(this.globalVariables.apiURL +  '/deleteDeck', this.deckJson).subscribe((res) => {console.log("Response deleteDeck : ");console.log(res); this.followingDeleteDeck();});
   }
 
   newDeck() {
@@ -105,7 +105,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   getDecks() {
-    this._http.post<any>(this.globalConstants.apiURL + '/getDecks', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
+    this._http.post<any>(this.globalVariables.apiURL + '/getDecks', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetDecks(res)});
   }
 
   followingGetDecks(res) {
@@ -119,7 +119,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   getCards() {
-    this._http.post<any>(this.globalConstants.apiURL + '/getCards', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetCards(res)});
+    this._http.post<any>(this.globalVariables.apiURL + '/getCards', null).subscribe((res) => {console.log("Response getDecks : ");console.log(res); this.followingGetCards(res)});
   }
 
   followingGetCards(res) {
@@ -129,7 +129,7 @@ export class DeckbuilderComponent implements OnInit {
   }
 
   setCurrent() {
-    this._http.post<any>(this.globalConstants.apiURL + '/setCurrent', this.deckJson).subscribe((res) => {console.log("Response setCurrent : ");console.log(res);});
+    this._http.post<any>(this.globalVariables.apiURL + '/setCurrent', this.deckJson).subscribe((res) => {console.log("Response setCurrent : ");console.log(res);});
   }
 
   defineSelectedForAllDecks() {

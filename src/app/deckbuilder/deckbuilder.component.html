@@ -1,37 +1,70 @@
+<div class="container">
+	
+	<!--
+		Une liste qui affiche tous les decks de l'utilisateur et qui permet de sélectionner un deck (ce qui l'affichera à la place d'un autre deck).
+		La balise select est le conteneur de la liste.
+		Le (change)="deckSelected($event), c'est du angular, c'est ce qui permet de changer de deck quand on clique sur un autre deck dans la liste.
 
-    <div class="container">
+		La balise option représente un choix dans la liste.
+		*ngFor="let deck of allDecks" est aussi du angular. Ca permet de créer une balise option pour chaque deck de l'utilisateur qui vient de la variable AllDecks.
+		[value]="deck.name" donne comme valeur à la balise le nom du deck.
+		[selected]="deck.selected" indique si le deck est sélectionné ou non.
+		{{deck.name}} affiche le nom du deck. C'est ça qui fait afficher le nom dans la liste. Les 2 autres sont pour le coté javascript/angular
 
-        <button class="button" (click)="debug()">Debug</button>
+		Je vous explique ce que ça fait mais vous n'avez pas besoin d'y toucher. Normalement, il vous suffit simplement d'ajouter.
+	-->
+	<select (change)="deckSelected($event)">
+    <option *ngFor="let deck of allDecks"
+      [value]="deck.name"
+      [selected]="deck.selected">
+        {{deck.name}}
+    </option>
+  </select>
 
-        <select (change)="deckSelected($event)">
-            <option *ngFor="let deck of allDecks"
-                [value]="deck.name"
-                [selected]="deck.selected">
-                {{deck.name}}
-            </option>
-        </select>
+	<!--
+		Un champ pour modifier le nom du deck actuel.
+		[value]="deckJson.name" 
+		(input)="onKeyDeckName($event)" permet à la supression ou l'entrée d'une nouvelle lettre, de mettre à jour le nom du deck dans la liste et du coté JS.
+	-->
+	<input type="text" placeholder="Enter your deck name" [value]="deckJson.name" (input)="onKeyDeckName($event)">
+	
+	<!--
+		Un bouton pour sauver le deck actuel.
+		(click)="saveDeck()" lance le bout du code coté JS pour sauver le deck (créer le fichier .tdk)
+	-->
+	<button class="button" (click)="saveDeck()">Save Deck</button>
+	
+	<!-- Un bouton pour supprimer le deck actuel. -->
+  <button class="button" (click)="deleteDeck()">Delete Deck</button>
 
-        <input type="text" placeholder="Enter your deck name" [value]="deckJson.name" (input)="onKeyDeckName($event)">
-        <button class="button" (click)="saveDeck()">Save Deck</button>
+	<!-- Un bouton pour créer un nouveau deck. -->
+	<button class="button" (click)="newDeck()">New Deck</button>
+	
+	<!--
+		Une div qui affiche toutes les cartes du deck actuel. Il y a une boucle ngFor qui va se répeter pour chaque cartes.
+		src="../../assets/image/cards/{{card.img_url}}" c'est l'adresse de l'image de la carte, {{card.img_url}} est personnalisé pour chaque carte.
+		(dblclick)="removeCardFromDecklist($event)" permet d'enlever une ccarte du deck en double cliquant
+	-->
+	<div *ngFor="let card of deckJson.cards">
+    <a (dblclick)="removeCardFromDecklist($event)">
+      <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+    </a>
+  </div>
 
-        <button class="button" (click)="deleteDeck()">Delete Deck</button>
+	<!--
+		Un champ pour modifier le nom du deck actuel.
+		(input)="onKeySearchByText($event)" va trier les cartes qui contiennent dans leurs nom le mot écrit dans leur nom
+	-->
+  <input type="text" placeholder="Search for a card" (input)="onKeySearchByText($event)" >
 
-        <button class="button" (click)="newDeck()">New Deck</button>
-        
-
-        <div *ngFor="let card of deckJson.cards">
-            <a (dblclick)="removeCardFromDecklist($event)">
-                <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
-            </a>
-        </div>
-
-        <input type="text" placeholder="Search for a card" (input)="onKeySearchByText($event)" >
-
-        <div *ngFor="let card of cardsInSearchView">
-            <a (click)="addCardToDecklist($event)">
-                <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
-            </a>
-        </div>
-    </div>
+	<!--
+		La même chose que pour l'afficheur de cartes dans le deck mais cette fois ci, affiche toutes les cartes qui existe trié selon nos recherches.
+	-->
+  <div *ngFor="let card of cardsInSearchView">
+    <a (click)="addCardToDecklist($event)">
+        <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+    </a>
+	</div>
+</div>
 
 

@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from '../services/global-constant';
-
+import { GlobalVariables } from '../services/globalVariables';
 import { SocketioService } from './../services/socketio.service';
 
 @Component({
@@ -13,7 +12,7 @@ import { SocketioService } from './../services/socketio.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private _http: HttpClient, private _router: Router, private socketService: SocketioService, private globalConstants: GlobalConstants) { }
+  constructor(private _http: HttpClient, private _router: Router, private socketService: SocketioService, private globalVariables: GlobalVariables) { }
 
   ngOnInit(): void {
   }
@@ -31,11 +30,11 @@ export class LoginComponent implements OnInit {
 
     this.socketService.userLogin(data.username);
 
-    this.globalConstants.username = data.username;
+    this.globalVariables.username = data.username;
     
     this._router.navigate(['menu']);
     /*
-    this._http.post<any>(this.globalConstants.apiURL + '/login', data).subscribe((res) => {
+    this._http.post<any>(this.globalVariables.apiURL + '/login', data).subscribe((res) => {
       console.log("Response login : ");
       console.log(res);
       this.followingLogin(data);

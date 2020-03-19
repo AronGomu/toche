@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from '../services/global-constant';
+import { GlobalVariables } from '../services/globalVariables';
 
-import { Deck } from '../shared/deck';
+import { Deck } from '../classes/deck';
+import { SocketioService } from '../services/socketio.service';
 
 @Component({
   selector: 'app-configgame',
@@ -16,25 +17,55 @@ export class ConfiggameComponent implements OnInit {
   public allDecks: Deck[];
 
   public deckJson: Deck;
-  constructor(private _http: HttpClient, private _router: Router, private globalConstants: GlobalConstants) {
+
+  public infoRoom = {
+    'roomCreator': null,
+    'roomJoiner': null,
+    'isCreator' : null,
+    'isPrivate' : null,
+    'socketRoomName': null,
+  }
+
+
+  constructor(private _http: HttpClient, private _router: Router, private globalVariables: GlobalVariables,  private socketioService: SocketioService) {
     // Check if user is connected, redirect to login page if not
-    /* Temporary
-    if (this.globalConstants.username == null) {
+    if (this.globalVariables.username == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }
-    */
+    
   }
 
   ngOnInit(): void {
     this.getDecks();
+
+    if (this.globalVariables.gameCreatorInitializer != null) {
+
+      this.infoRoom = this.globalVariables.gameCreatorInitializer
+
+      // If the user is the creator of the room
+      if (this.infoRoom.isCreator == true) {
+        // If there is an already choosed joiner
+        if (this.infoRoom.roomJoiner != null) {
+          this.infoRoom.socketRoomName = this.infoRoom.roomCreator.username + " and " + this.infoRoom.roomJoiner.username + " game."
+          this.socketioService.socket.emit('joinRoom', this.infoRoom);
+        }
+
+        // If there is no already choosed joiner
+        else {
+        }
+      }
+
+      // If the user is the joiner
+      else if (this.infoRoom.isCreator == false) {
+
+        this.socketioService.socket.emit('roomJoined', this.infoRoom.socketRoomName);
+      }
+    }
   }
 
   getDecks() {
-    this._http.post<any>(this.globalConstants.apiURL + '/getDecks', null).subscribe((res) => {
-      console.log("Response getDecks : ");
-      console.log(res);
-      this.followingGetDecks(res)});
+    this._http.post<any>(this.globalVariables.apiURL + '/getDecks', null).subscribe((res) => {});
   }
 
   followingGetDecks(res) {
@@ -62,7 +93,7 @@ export class ConfiggameComponent implements OnInit {
   }
 
   startGame() {
-    this.globalConstants.currentDeck = this.deckJson;
+    this.globalVariables.currentDeck = this.deckJson;
     this._router.navigate(['game']);
 
   }
@@ -70,6 +101,7 @@ export class ConfiggameComponent implements OnInit {
   debug() {
     console.log(this.deckJson);
     console.log(this.allDecks);
+    console.log(this.infoRoom);
   }
 
 }

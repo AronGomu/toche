@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { GlobalConstants } from '../services/global-constant';
+import { GlobalVariables } from '../services/globalVariables';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +11,7 @@ import { GlobalConstants } from '../services/global-constant';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(private _http: HttpClient, private _router: Router, private globalConstants: GlobalConstants) { }
+  constructor(private _http: HttpClient, private _router: Router, private globalVariables: GlobalVariables) { }
 
   ngOnInit(): void {
   }
@@ -27,7 +27,7 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this._http.post<any>(this.globalConstants.apiURL + '/register', data).subscribe((res) => {
+    this._http.post<any>(this.globalVariables.apiURL + '/register', data).subscribe((res) => {
       console.log("Response Register : ");
       console.log(res);
       this.followingRegister(res);
@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
   }
 
   followingRegister(res) {
-    //this.globalConstants.username = res.username;
+    //this.globalVariables.username = res.username;
     this._router.navigate(['login']);
     return;
   }
