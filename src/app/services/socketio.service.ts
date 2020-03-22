@@ -30,6 +30,13 @@ export class SocketioService {
       }
     });
 
+    this.socket.on('refreshConnectedUserList',(data) => {
+      console.log("Receive refreshConnectedUserList : ");
+      console.log(data.userlist);
+      this.globalVariables.setConnectedUsers(data.userlist)
+    });
+
+
     this.socket.on('joinRoom', (data) => {
 
       console.log("Receive joinRoom : ");console.log(data);console.log("");

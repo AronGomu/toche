@@ -1,9 +1,13 @@
 <ul>
     <li *ngFor="let user of userlist">
         <div>{{ user.username }}</div>
-        <button *ngIf="user.isNotMe" (click)="askChallenge($event.target.id)" id="{{ user.username }}">Défier !</button>
-        <button *ngIf="user.askedChallenge" (click)="acceptChallenge($event.target.id, true)" id="{{ user.username }}">Accepter</button>
-        <button *ngIf="user.askedChallenge" (click)="acceptChallenge($event.target.id, false)" id="{{ user.username }}">Refuser</button>
+        <div *ngIf="myself.isNotInGame">
+            <div *ngIf="user.isNotInGame">
+                <button *ngIf="user.isNotMe" (click)="askChallenge($event.target.id)" id="{{ user.username }}">Défier !</button>
+            </div>
+        </div>
     </li>
+    <button *ngIf="challengeAskerData.isAsker" (click)="acceptChallenge($event.target.id, true)" [id]="challengeAskerData.username">Accepter</button>
+    <button *ngIf="challengeAskerData.isAsker" (click)="acceptChallenge($event.target.id, false)" [id]="challengeAskerData.username">Refuser</button>
     <button (click)=debug()>Debug</button>
 </ul>

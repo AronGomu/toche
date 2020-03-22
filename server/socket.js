@@ -6,8 +6,22 @@ module.exports = function (io) {
 
   getUserByName = function(name) {
     ioData.usersConnected.forEach(user => {
+      console.log(user.username + " & " + name);
       if (user.username == name) {
-        return user.socketId;
+        console.log("Result getUserByName");
+        console.log(user);
+        return user;
+      }
+    });
+  }
+
+  setUserisNotInGameByName = function(name, isNotInGame) {
+    ioData.usersConnected.forEach(user => {
+      console.log(user.username + " & " + name);
+      if (user.username == name) {
+        console.log("Result getUserByName");
+        console.log(user);
+        user.isNotInGame = isNotInGame;
       }
     });
   }
@@ -26,15 +40,24 @@ module.exports = function (io) {
 
     socket.on('user_login', (username) => {
       console.log("Receive user_login : " + username);
+      console.log("\nAll Users logged in");
+      console.log(ioData.usersConnected);
+      console.log("\n");
       userToAdd = {
         'socketId' : socket.id,
         'username' : username,
-        'isNotMe' : null
+        'isNotMe' : null,
+        'isNotInGame' : true
       }
-
       ioData.usersConnected.push(userToAdd);
+      data = { 'userlist': ioData.usersConnected }
+      io.emit('user_did_login', data);
+    });
 
-      io.emit('user_did_login', ioData.usersConnected);
+    socket.on('refreshConnectedUserList', () => {
+      console.log("Receive refreshConnectedUserList");console.log(data);console.log("");
+      data = { 'userlist': ioData.usersConnected };
+      io.emit('refreshConnectedUserList', data);
     });
 
     socket.on('askChallenge', (data) => {
@@ -44,6 +67,11 @@ module.exports = function (io) {
 
     socket.on('acceptChallenge', (data) => {
       console.log("Receive acceptChallenge");console.log(data);console.log("");
+      if (data.accept == true) {
+        setUserisNotInGameByName(data.userAsked.username,false);
+        setUserisNotInGameByName(data.userAsking.username,false);
+        io.emit('updateConnectedUserList', data);
+      }
       io.to(data.userAsking.socketId).emit('challengePropositionResponse', data);
     });
 

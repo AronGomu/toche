@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { GlobalVariables } from '../services/globalVariables';
 import { GlobalFunctions } from '../services/globalFunctions';
 import { SocketioService } from './../services/socketio.service';
+import { User } from '../classes/user';
 
 
 @Component({
@@ -14,12 +15,17 @@ import { SocketioService } from './../services/socketio.service';
 })
 export class UserlistComponent implements OnInit {
 
+
+  public myself: User;
   public userlist = null;
 
   challengeAskerData =  {
+    'isAsker': false,
     'username': null,
     'socketId' : null
   }
+
+
 
   constructor(public globalVariables: GlobalVariables, private globalFunctions: GlobalFunctions,  private socketService: SocketioService, private _router: Router) {}
 
@@ -28,32 +34,20 @@ export class UserlistComponent implements OnInit {
 
       console.log("Receive user_did_login");console.log(data);console.log("");
 
-      if (this.globalVariables.username == null) {
-        return;
-      }
-
-      this.globalVariables.connectedUsers = data;
-
-      this.globalVariables.connectedUsers.forEach(element => {
-        if (element.username == this.globalVariables.username) {
-          element.isNotMe = false;
-        }
-        else {
-          element.isNotMe = true;
-        }
-      });
+      this.globalVariables.setConnectedUsers(data.userlist);
 
       this.userlist = [...this.globalVariables.connectedUsers];
+      this.userlist.forEach(user => {
+        if (user.username == this.globalVariables.username) {
+          this.myself = user;
+        }
+      });
 
       for (let i = 0; i < this.userlist.length; i++) {
         if (this.userlist[i].username == this.globalVariables.username) {
           this.userlist.splice(i,1);
         }
       }
-
-      this.userlist.forEach(user => {
-        user['askedChallenge'] = false;
-      });
     })
   }
 
@@ -61,11 +55,7 @@ export class UserlistComponent implements OnInit {
     this.socketService.socket.on('gotChallengeProposition', (data) => {
       console.log("Receive gotChallengeProposition");console.log(data);console.log("");
       this.challengeAskerData = data.userAsking;
-      for (let i = 0; i < this.userlist.length; i++) {
-        if ( this.challengeAskerData.username = this.userlist[i].username ) {
-          this.userlist[i].askedChallenge = true;
-        }
-      }
+      this.challengeAskerData.isAsker = true;
     })
   }
 
@@ -74,6 +64,7 @@ export class UserlistComponent implements OnInit {
       console.log("Receive challengePropositionResponse");console.log(data);console.log("");
 
       if (data.accept == true) {
+        this.socketService.socket.emit('refreshConnectedUserList');
         this.globalVariables.gameCreatorInitializer = {
           'roomCreator': data.userAsking,
           'roomJoiner': data.userAsked,
@@ -106,6 +97,8 @@ export class UserlistComponent implements OnInit {
       'userAsking': tempData[1],
     }
     this.socketService.socket.emit('askChallenge', data);
+
+    this.myself.isNotInGame = false;
   }
 
   acceptChallenge(targetUsername, accept) {
@@ -121,14 +114,13 @@ export class UserlistComponent implements OnInit {
     }
 
     this.socketService.socket.emit('acceptChallenge', data);
+
+    this.challengeAskerData.isAsker = false;
     
   }
 
   debug() {
-    console.log(this.globalVariables.connectedUsers);
-    this.globalVariables.connectedUsers.forEach(element => {
-      console.log(element);
-    });
+    console.log(this.challengeAskerData);
   }
 
 }
