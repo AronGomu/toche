@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { GlobalVariables } from '../services/globalVariables';
 import { SocketioService } from './../services/socketio.service';
 
+import { User } from './../classes/user';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -28,11 +30,9 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.socketService.userLogin(data.username);
+    this.globalVariables.myself = new User(data.username);
 
-    this.globalVariables.username = data.username;
-    
-    this._router.navigate(['menu']);
+    this.socketService.userLogin(data.username);
     /*
     this._http.post<any>(this.globalVariables.apiURL + '/login', data).subscribe((res) => {
       console.log("Response login : ");

@@ -9,7 +9,7 @@ export class GlobalVariables {
 
   public apiURL: string = "http://localhost:3000";
 
-  public username: string = null;
+  public myself: User = null;
 
   public connectedUsers: User[] = [];
 
@@ -23,16 +23,20 @@ export class GlobalVariables {
     'socketRoomName': null,
   };
 
+  public setMyself(myself: User) {
+    this.myself = myself;
+  }
+
 
   public setConnectedUsers (userlist) {
-    if (this.username == null) {
+    if (this.myself.username == null) {
       return;
     }
       
     this.connectedUsers = userlist;
       
     this.connectedUsers.forEach(element => {
-			if (element.username == this.username) {
+			if (element.username == this.myself.username) {
 				element.isNotMe = false;
 			} else {
 				element.isNotMe = true;

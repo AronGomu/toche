@@ -50,7 +50,7 @@ module.exports = function (io) {
         'isNotInGame' : true
       }
       ioData.usersConnected.push(userToAdd);
-      data = { 'userlist': ioData.usersConnected }
+      data = { 'userlist': ioData.usersConnected, 'myself':userToAdd }
       io.emit('user_did_login', data);
     });
 

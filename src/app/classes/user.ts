@@ -5,7 +5,7 @@ export class User {
     public isNotInGame: boolean;
 
 
-    constructor(username: string, socketId: number, isNotMe: boolean, isNotInGame?: boolean) {
+    constructor(username: string, socketId?: number, isNotMe?: boolean, isNotInGame?: boolean) {
         this.username = username;
         this.socketId = socketId;
         this.isNotMe = isNotMe;

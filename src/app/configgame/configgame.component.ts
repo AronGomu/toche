@@ -29,7 +29,7 @@ export class ConfiggameComponent implements OnInit {
 
   constructor(private _http: HttpClient, private _router: Router, private globalVariables: GlobalVariables,  private socketioService: SocketioService) {
     // Check if user is connected, redirect to login page if not
-    if (this.globalVariables.username == null) {
+    if (this.globalVariables.myself == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }

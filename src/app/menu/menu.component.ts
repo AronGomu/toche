@@ -11,7 +11,7 @@ import { GlobalVariables } from '../services/globalVariables';
 export class MenuComponent implements OnInit {
 
   constructor(private _router : Router, public globalVariables: GlobalVariables) {
-    if (this.globalVariables.username == null) {
+    if (this.globalVariables.myself == null) {
       this._router.navigate(['login'], {replaceUrl: true});
       return;
     }

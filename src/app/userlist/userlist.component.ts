@@ -32,22 +32,24 @@ export class UserlistComponent implements OnInit {
   public onLogin():  void {
     this.socketService.socket.on('user_did_login',(data) => {
 
-      console.log("Receive user_did_login");console.log(data);console.log("");
+      console.log("Receive user_did_login");console.log(data.myself);console.log(data.userlist);console.log("");
 
+      if (this.globalVariables.myself.username == data.myself.username) {
+        this.globalVariables.setMyself(data.myself);
+      }
+      
       this.globalVariables.setConnectedUsers(data.userlist);
 
+      this.myself = this.globalVariables.myself;
       this.userlist = [...this.globalVariables.connectedUsers];
-      this.userlist.forEach(user => {
-        if (user.username == this.globalVariables.username) {
-          this.myself = user;
-        }
-      });
+      
 
       for (let i = 0; i < this.userlist.length; i++) {
-        if (this.userlist[i].username == this.globalVariables.username) {
+        if (this.userlist[i].username == this.globalVariables.myself.username) {
           this.userlist.splice(i,1);
         }
       }
+      this._router.navigate(['menu']);
     })
   }
 
@@ -55,7 +57,12 @@ export class UserlistComponent implements OnInit {
     this.socketService.socket.on('gotChallengeProposition', (data) => {
       console.log("Receive gotChallengeProposition");console.log(data);console.log("");
       this.challengeAskerData = data.userAsking;
-      this.challengeAskerData.isAsker = true;
+      this.challengeAskerData['isAsker'] = true;
+      this.userlist.forEach(user => {
+        if (user.username == this.globalVariables.myself.username) {
+          user.isNotInGame = true;
+        }
+      });
     })
   }
 
@@ -74,6 +81,10 @@ export class UserlistComponent implements OnInit {
         }
         
         this._router.navigate(['configgame']);
+      } else {
+        this.challengeAskerData['isAsker'] = false;
+        this.globalVariables.myself.isNotInGame = true;
+        this.myself.isNotInGame = true;
       }
     })
   }
@@ -90,11 +101,11 @@ export class UserlistComponent implements OnInit {
 
     console.log('Send askChallenge');
 
-    let tempData = this.globalFunctions.getUsersByUsername([targetUsername,this.globalVariables.username]);
+    let tempData = this.globalFunctions.getUsersByUsername([targetUsername]);
 
     let data = {
       'userAsked': tempData[0],
-      'userAsking': tempData[1],
+      'userAsking': this.globalVariables.myself,
     }
     this.socketService.socket.emit('askChallenge', data);
 
@@ -105,11 +116,11 @@ export class UserlistComponent implements OnInit {
 
     console.log('Send acceptChallenge');
 
-    let tempData = this.globalFunctions.getUsersByUsername([targetUsername,this.globalVariables.username]);
+    let tempData = this.globalFunctions.getUsersByUsername([targetUsername]);
 
     let data = {
       'userAsking': tempData[0],
-      'userAsked': tempData[1],
+      'userAsked': this.globalVariables.myself,
       'accept' : accept
     }
 
@@ -120,7 +131,10 @@ export class UserlistComponent implements OnInit {
   }
 
   debug() {
-    console.log(this.challengeAskerData);
+    console.log(this.globalVariables.myself);
+    console.log(this.myself);
+    console.log(this.globalVariables.connectedUsers);
+    console.log(this.userlist);
   }
 
 }
