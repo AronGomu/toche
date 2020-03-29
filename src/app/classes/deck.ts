@@ -1,8 +1,9 @@
+import { Card } from './card'
 export class Deck {
 
     public oldname: string;
     public name: string;
-    public cards;
+    public cards: Card[];
     public selected: boolean;
 
     constructor(oldname: string, name: string, cards, selected: boolean) {

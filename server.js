@@ -14,7 +14,7 @@ app.use(cors());
 // import your routes
 require('./server/decksManager.js')(app);
 require('./server/auth.js')(app);
-require('./server/socket.js')(io)
+require('./server/sockets.js')(io)
 
 const PORT = 3000;
 

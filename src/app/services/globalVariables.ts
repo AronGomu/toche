@@ -1,5 +1,6 @@
-import {Deck} from '../classes/deck';
+import {Deck} from '../classes/Deck';
 import {User} from '../classes/user';
+import {GameInfo} from '../classes/gameInfo';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -15,18 +16,11 @@ export class GlobalVariables {
 
   public currentDeck: Deck = null;
 
-  public gameCreatorInitializer = {
-    'roomCreator': null,
-    'roomJoiner': null,
-    'isCreator': null,
-    'isPrivate': null,
-    'socketRoomName': null,
-  };
+  public gameInfo: GameInfo;
 
   public setMyself(myself: User) {
     this.myself = myself;
   }
-
 
   public setConnectedUsers (userlist) {
     if (this.myself.username == null) {
@@ -37,9 +31,9 @@ export class GlobalVariables {
       
     this.connectedUsers.forEach(element => {
 			if (element.username == this.myself.username) {
-				element.isNotMe = false;
+				element.isMe = true;
 			} else {
-				element.isNotMe = true;
+				element.isMe = false;
 			}
 		});
 	}

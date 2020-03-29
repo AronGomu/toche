@@ -9,5 +9,9 @@
         </option>
     </select>
     <span>{{infoRoom.roomCreator.username}} vs {{infoRoom.roomJoiner.username}}</span>
-    <button *ngIf="infoRoom.isCreator" (click)=startGame()>Start</button>
+    <div *ngIf="infoRoom.isCreator; else elseBlock">
+        <input type="checkbox" [checked]="isReady" (change)="changeReady()" disabled/>Ready
+        <button [disabled]="!isReady" (click)=startGame()>Start</button>
+    </div>
+    <ng-template #elseBlock><input type="checkbox" [checked]="isReady" (change)="changeReady()"/>Ready</ng-template>
 <div>

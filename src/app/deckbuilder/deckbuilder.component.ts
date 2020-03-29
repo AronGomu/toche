@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { GlobalVariables } from '../services/globalVariables';
 
-import { Deck } from '../classes/deck';
+import { Deck } from '../classes/Deck';
 
 @Component({
   selector: 'app-deckbuilder',

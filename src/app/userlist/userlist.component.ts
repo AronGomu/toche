@@ -6,6 +6,7 @@ import { GlobalVariables } from '../services/globalVariables';
 import { GlobalFunctions } from '../services/globalFunctions';
 import { SocketioService } from './../services/socketio.service';
 import { User } from '../classes/user';
+import { GameInfo } from '../classes/gameInfo';
 
 
 @Component({
@@ -19,18 +20,20 @@ export class UserlistComponent implements OnInit {
   public myself: User;
   public userlist = null;
 
-  challengeAskerData =  {
-    'isAsker': false,
-    'username': null,
-    'socketId' : null
-  }
+  challengeAsker: User;
 
 
 
   constructor(public globalVariables: GlobalVariables, private globalFunctions: GlobalFunctions,  private socketService: SocketioService, private _router: Router) {}
 
   public onLogin():  void {
+
+
     this.socketService.socket.on('user_did_login',(data) => {
+
+      if (this.globalVariables.myself == null) {
+        return;
+      }
 
       console.log("Receive user_did_login");console.log(data.myself);console.log(data.userlist);console.log("");
 
@@ -56,13 +59,8 @@ export class UserlistComponent implements OnInit {
   gotChallengePropositionReceiver() {
     this.socketService.socket.on('gotChallengeProposition', (data) => {
       console.log("Receive gotChallengeProposition");console.log(data);console.log("");
-      this.challengeAskerData = data.userAsking;
-      this.challengeAskerData['isAsker'] = true;
-      this.userlist.forEach(user => {
-        if (user.username == this.globalVariables.myself.username) {
-          user.isNotInGame = true;
-        }
-      });
+      this.challengeAsker = data.userAsking;
+      this.myself.isInGame = true;
     })
   }
 
@@ -72,19 +70,11 @@ export class UserlistComponent implements OnInit {
 
       if (data.accept == true) {
         this.socketService.socket.emit('refreshConnectedUserList');
-        this.globalVariables.gameCreatorInitializer = {
-          'roomCreator': data.userAsking,
-          'roomJoiner': data.userAsked,
-          'isCreator': true,
-          'isPrivate': true,
-          'socketRoomName' : null,
-        }
-        
+        this.globalVariables.gameInfo = new GameInfo(data.userAsking, data.userAsked, true, true)
         this._router.navigate(['configgame']);
       } else {
-        this.challengeAskerData['isAsker'] = false;
-        this.globalVariables.myself.isNotInGame = true;
-        this.myself.isNotInGame = true;
+        this.globalVariables.myself.isInGame = false;
+        this.myself.isInGame = false;
       }
     })
   }
@@ -109,7 +99,7 @@ export class UserlistComponent implements OnInit {
     }
     this.socketService.socket.emit('askChallenge', data);
 
-    this.myself.isNotInGame = false;
+    this.myself.isInGame = true;
   }
 
   acceptChallenge(targetUsername, accept) {
@@ -124,9 +114,9 @@ export class UserlistComponent implements OnInit {
       'accept' : accept
     }
 
-    this.socketService.socket.emit('acceptChallenge', data);
+    this.challengeAsker = null;
 
-    this.challengeAskerData.isAsker = false;
+    this.socketService.socket.emit('acceptChallenge', data);
     
   }
 

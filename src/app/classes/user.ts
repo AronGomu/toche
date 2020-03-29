@@ -1,18 +1,18 @@
 export class User {
     public username: string;
     public socketId: number;
-    public isNotMe: boolean;
-    public isNotInGame: boolean;
+    public isMe: boolean;
+    public isInGame: boolean;
 
 
-    constructor(username: string, socketId?: number, isNotMe?: boolean, isNotInGame?: boolean) {
+    constructor(username: string, socketId?: number, isMe?: boolean, isInGame?: boolean) {
         this.username = username;
         this.socketId = socketId;
-        this.isNotMe = isNotMe;
-        if (isNotInGame) {
-            this.isNotInGame = isNotInGame;
+        this.isMe = isMe;
+        if (isInGame) {
+            this.isInGame = isInGame;
         } else {
-            this.isNotInGame = true;
+            this.isInGame = true;
         }
     }
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 
 import { GlobalVariables } from './globalVariables';
-import { Deck } from '../classes/deck';
+import { Deck } from '../classes/Deck';
 import { Injectable } from '@angular/core';
 //import { Card } from './card';
 

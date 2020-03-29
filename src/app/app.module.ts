@@ -22,6 +22,7 @@ import { SocketioService } from './services/socketio.service';
 import { GlobalVariables } from './services/globalVariables';
 import { GlobalFunctions } from './services/globalFunctions';
 import { UserlistComponent } from './userlist/userlist.component';
+import { Game2Component } from './game2/game2.component';
 
 
 
@@ -36,6 +37,7 @@ import { UserlistComponent } from './userlist/userlist.component';
     RegisterComponent,
     ConfiggameComponent,
     UserlistComponent,
+    Game2Component,
   ],
   imports: [
     BrowserModule,

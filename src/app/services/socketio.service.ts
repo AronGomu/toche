@@ -5,6 +5,7 @@ import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
 
 import { GlobalVariables } from './globalVariables';
+import { GameInfo } from '../classes/gameInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -41,13 +42,11 @@ export class SocketioService {
 
       console.log("Receive joinRoom : ");console.log(data);console.log("");
 
-      this.globalVariables.gameCreatorInitializer = {
-        'roomCreator': data.roomCreator,
-        'roomJoiner': data.roomJoiner,
-        'isCreator': false,
-        'isPrivate': data.isPrivate,
-        'socketRoomName': data.socketRoomName,
-      }
+      this.globalVariables.gameInfo = new GameInfo(data.roomCreator,
+                                                    data.roomJoiner,
+                                                    false,
+                                                    data.isPrivate,
+                                                    data.socketRoomName)
       this._router.navigate(['configgame']);
     });
 
