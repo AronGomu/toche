@@ -19,7 +19,7 @@ export class ConfiggameComponent implements OnInit {
 
   public deckJson: Deck;
 
-  public infoRoom: GameInfo;
+  public gameInfo: GameInfo;
 
   public isReady: boolean = false;
 
@@ -43,8 +43,8 @@ export class ConfiggameComponent implements OnInit {
     this.socketService.socket.on('startGame', (data) => {
       console.log("Receive startGame");console.log(data);console.log("");
       this.globalVariables.currentDeck = this.deckJson;
-      this.infoRoom.isStarted = true;
-      this.globalVariables.gameInfo = this.infoRoom;
+      this.gameInfo.isStarted = true;
+      this.globalVariables.gameInfo = this.gameInfo;
       this._router.navigate(['game']);
     })
   }
@@ -54,14 +54,14 @@ export class ConfiggameComponent implements OnInit {
 
     if (this.globalVariables.gameInfo != null) {
 
-      this.infoRoom = this.globalVariables.gameInfo
+      this.gameInfo = this.globalVariables.gameInfo
 
       // If the user is the creator of the room
-      if (this.infoRoom.isCreator == true) {
+      if (this.gameInfo.isCreator == true) {
         // If there is an already choosed joiner
-        if (this.infoRoom.roomJoiner != null) {
-          this.infoRoom.socketRoomName = this.infoRoom.roomCreator.username + " and " + this.infoRoom.roomJoiner.username + " game."
-          this.socketService.socket.emit('joinRoom', this.infoRoom);
+        if (this.gameInfo.roomJoiner != null) {
+          this.gameInfo.socketRoomName = this.gameInfo.roomCreator.username + " and " + this.gameInfo.roomJoiner.username + " game."
+          this.socketService.socket.emit('joinRoom', this.gameInfo);
         }
 
         // If there is no already choosed joiner
@@ -70,8 +70,8 @@ export class ConfiggameComponent implements OnInit {
       }
 
       // If the user is the joiner
-      else if (this.infoRoom.isCreator == false) {
-        this.socketService.socket.emit('roomJoined', this.infoRoom.socketRoomName);
+      else if (this.gameInfo.isCreator == false) {
+        this.socketService.socket.emit('roomJoined', this.gameInfo.socketRoomName);
       }
     }
     // Launch all receiver
@@ -109,7 +109,7 @@ export class ConfiggameComponent implements OnInit {
 
   startGame() {
     let data = {
-      'infoRoom' : this.infoRoom,
+      'gameInfo' : this.gameInfo,
     }
     this.socketService.socket.emit('startGame',data);
   }
@@ -119,7 +119,7 @@ export class ConfiggameComponent implements OnInit {
     console.log(this.isReady);
 
     let data = {
-      'infoRoom' : this.infoRoom,
+      'gameInfo' : this.gameInfo,
       'isReady' : this.isReady
     }
 
@@ -129,7 +129,7 @@ export class ConfiggameComponent implements OnInit {
   debug() {
     console.log(this.deckJson);
     console.log(this.allDecks);
-    console.log(this.infoRoom);
+    console.log(this.gameInfo);
     this.isReady = true;
   }
 

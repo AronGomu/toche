@@ -8,8 +8,8 @@
             {{deck.name}}
         </option>
     </select>
-    <span>{{infoRoom.roomCreator.username}} vs {{infoRoom.roomJoiner.username}}</span>
-    <div *ngIf="infoRoom.isCreator; else elseBlock">
+    <span>{{gameInfo.roomCreator.username}} vs {{gameInfo.roomJoiner.username}}</span>
+    <div *ngIf="gameInfo.isCreator; else elseBlock">
         <input type="checkbox" [checked]="isReady" (change)="changeReady()" disabled/>Ready
         <button [disabled]="!isReady" (click)=startGame()>Start</button>
     </div>

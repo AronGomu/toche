@@ -6,7 +6,7 @@ module.exports = function (io) {
   }
 
   io.on('connection', function(socket){
-
+    console.log("Receive connect from " + socket.id);
     ioData.socket = socket;
     
     socket.on('disconnect', () => {

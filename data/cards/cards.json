@@ -9,7 +9,7 @@
     "subtype": ["Inion"],
     "attack": 2000,
     "power": 1,
-    "img_url": "Artiste Pensive.jpg"
+    "imgUrl": "Artiste Pensive.jpg"
 },
 {
     "id": 2,
@@ -22,5 +22,5 @@
     "subtype": null,
     "attack": null,
     "power": null,
-    "img_url": "Écume Arc-en-ciel.jpg"
+    "imgUrl": "Écume Arc-en-ciel.jpg"
 }]

@@ -9,9 +9,9 @@ export class Card {
     subtype: string[];
     attack: number;
     power: number;
-    img_url: string;
+    imgUrl: string;
 
-    constructor(id:string, color:string, faction:string, name:string, manacost:string, type:string[], archetype:string[], subtype:string[], attack:number, power:number, img_url:string) {
+    constructor(id:string, color:string, faction:string, name:string, manacost:string, type:string[], archetype:string[], subtype:string[], attack:number, power:number, imgUrl:string) {
         this.id = id;
         this.color = color;
         this.faction = faction;
@@ -22,6 +22,6 @@ export class Card {
         this.subtype = subtype;
         this.attack = attack;
         this.power = power;
-        this.img_url = img_url;
+        this.imgUrl = imgUrl;
     }
 }

@@ -1,17 +1,6 @@
 
 module.exports = function (io, ioData) {
 
-  getUserByNameFromConnectedUserlist = function(name) {
-    ioData.connectedUserlist.forEach(user => {
-      console.log(user.username + " & " + name);
-      if (user.username == name) {
-        console.log("Result getUserByNameFromConnectedUserlist");
-        console.log(user);
-        return user;
-      }
-    });
-  }
-
   setUserIsInGameByName = function(name, isInGame) {
     ioData.connectedUserlist.forEach(user => {
       console.log(user.username + " & " + name);
@@ -57,11 +46,11 @@ module.exports = function (io, ioData) {
 
     ioData.socket.on('changeReady', (data) => {
       console.log("Receive changeReady");console.log(data);console.log("");
-      io.to(data.infoRoom.roomCreator.socketId).emit('changeReady', data);
+      io.to(data.gameInfo.roomCreator.socketId).emit('changeReady', data);
     })
 
     ioData.socket.on('startGame', (data) => {
       console.log("Receive startGame");console.log(data);console.log("");
-      io.to(data.infoRoom.socketRoomName).emit('startGame', data);
+      io.to(data.gameInfo.socketRoomName).emit('startGame', data);
     })
 }

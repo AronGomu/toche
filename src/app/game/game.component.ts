@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { GameInfo } from '../classes/gameInfo';
 import { GlobalVariables } from '../services/globalVariables';
 
-import { Player } from './game.classes/Player';
-import { Deck } from '../classes/deck';
-import { Field } from './game.classes/Field';
 import { SocketioService } from '../services/socketio.service';
 import { User } from '../classes/user';
+
+import { GameInfo } from '../classes/gameInfo';
+import { Deck } from '../classes/deck';
 import { Card } from '../classes/card';
+
 
 @Component({
   selector: 'app-game',
@@ -57,14 +57,39 @@ export class GameComponent implements OnInit {
     */
   }
 
+  // Receivers
+
+  setSocketIdReceiver() {
+    this.socketService.socket.on("setSocketId", (data) => {
+      console.log("Receive setSocketId");
+      this.myself.socketId = data;
+      this.socketService.socket.emit("initializeGame", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+    })
+  }
+
+  initializeGameReceiver() {
+    // Data should be a socket.Id
+    this.socketService.socket.on("initializeGame", () => {
+      console.log("Receive initializeGame");
+      console.log(this.gameInfo.socketRoomName);
+      this.socketService.socket.emit("fetchGameState", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+    })
+  }
+
+  fetchGameStateReceiver() {
+    this.socketService.socket.on("fetchGameState", (data) => {
+      console.log("Receive fetchGameState");console.log(data);
+    })
+  }
+
+  // On start
+
   ngOnInit(): void {
-    let data = {
-      'myself': this.myself,
-      'opponent' : this.opponent,
-      'gameInfo': this.gameInfo,
-      'deck': this.myDeck,
-    }
-    this.socketService.socket.emit('initializeGame',data);
+    this.socketService.socket.emit("setSocketId", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+    this.setSocketIdReceiver();
+    this.initializeGameReceiver();
+    this.fetchGameStateReceiver();
+
   }
 
 }
