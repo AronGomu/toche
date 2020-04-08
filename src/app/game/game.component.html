@@ -1,1 +1,28 @@
-<p>game works!</p>
+<!-- Row 1 -->
+
+<div *ngIf="isHover" style="position: absolute;" [style.left.px]=xPosMouse [style.top.px]=yPosMouse>
+	<img [src]=imgUrl>
+</div>
+
+<div class="row">
+	<div class="col s1 imgbox">
+		<div>
+			<img class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+		</div>
+	</div>
+	<div class="col s10 imgbox">
+		<div class="row">
+			<img *ngFor="let card of me.hand" class="" src="../../assets/image/cards/{{card.imgUrlString}}" 
+			[height]=imgHeight 
+			[width]=imgWidth 
+			(mouseenter)="mouseEnterCardImg($event)" 
+			(mouseleave)="mouseLeaveCardImg($event)"
+			(onmousemove)="setCardHover($event)">
+		</div>
+	</div>
+	<div class="col s1 imgbox">
+		<div>
+			<img class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+		</div>
+	</div>
+</div>
