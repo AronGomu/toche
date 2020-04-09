@@ -13,19 +13,24 @@
 
 		Je vous explique ce que ça fait mais vous n'avez pas besoin d'y toucher. Normalement, il vous suffit simplement d'ajouter.
 	-->
-	<select (change)="deckSelected($event)">
+
+	
+	<select class="browser-default" (change)="deckSelected($event)">
     <option *ngFor="let deck of allDecks"
       [value]="deck.name"
       [selected]="deck.selected">
         {{deck.name}}
     </option>
-  </select>
+	</select>
+
+
 
 	<!--
 		Un champ pour modifier le nom du deck actuel.
 		[value]="deckJson.name" 
 		(input)="onKeyDeckName($event)" permet à la supression ou l'entrée d'une nouvelle lettre, de mettre à jour le nom du deck dans la liste et du coté JS.
 	-->
+
 	<input type="text" placeholder="Enter your deck name" [value]="deckJson.name" (input)="onKeyDeckName($event)">
 	
 	<!--
@@ -42,12 +47,12 @@
 	
 	<!--
 		Une div qui affiche toutes les cartes du deck actuel. Il y a une boucle ngFor qui va se répeter pour chaque cartes.
-		src="../../assets/image/cards/{{card.img_url}}" c'est l'adresse de l'image de la carte, {{card.img_url}} est personnalisé pour chaque carte.
+		src="../../assets/image/cards/{{card.imgUrl}}" c'est l'adresse de l'image de la carte, {{card.imgUrl}} est personnalisé pour chaque carte.
 		(dblclick)="removeCardFromDecklist($event)" permet d'enlever une ccarte du deck en double cliquant
 	-->
 	<div *ngFor="let card of deckJson.cards">
     <a (dblclick)="removeCardFromDecklist($event)">
-      <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+      <img src="../../assets/image/cards/{{card.imgUrl}}" id="{{card.id}}">
     </a>
   </div>
 
@@ -62,7 +67,7 @@
 	-->
   <div *ngFor="let card of cardsInSearchView">
     <a (click)="addCardToDecklist($event)">
-        <img src="../../assets/image/cards/{{card.img_url}}" id="{{card.id}}">
+        <img src="../../assets/image/cards/{{card.imgUrl}}" id="{{card.id}}">
     </a>
 	</div>
 </div>

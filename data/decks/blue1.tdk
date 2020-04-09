@@ -1,1 +1,1 @@
-{"oldname":"","name":"blue1","cards":[{"id":1,"color":"Blue","faction":"Tempérant","name":"Artiste Pensive","manacost":"U","type":"creature","archetype":"Inia","subtype":"Inion","attack":2000,"power":1,"img_url":"Artiste Pensive.jpg"}],"selected":null}
+{"oldname":"blue1","name":"blue1","cards":[{"id":1,"color":"Blue","faction":"Tempérant","name":"Artiste Pensive","manacost":"U","type":["creature"],"archetype":["Inia"],"subtype":["Inion"],"attack":2000,"power":1,"imgUrl":"Artiste Pensive.jpg"}],"selected":null}

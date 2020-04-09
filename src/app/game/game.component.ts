@@ -8,6 +8,7 @@ import { User } from '../classes/user';
 import { GameInfo } from '../classes/gameInfo';
 import { Deck } from '../classes/deck';
 import { Card } from '../classes/card';
+import { Game } from './game.classes/Game';
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -21,6 +22,8 @@ import { Card } from '../classes/card';
   }
 })
 export class GameComponent implements OnInit {
+
+  public game: Game;
 
   // img sizes data
   private originalImgHeight: number = 616;
@@ -41,13 +44,7 @@ export class GameComponent implements OnInit {
   public yPosMouse: Position;
   public imgUrl: string;
 
-
-  // Game Data
-  public myself: User;
-  public opponent: User;
-  public gameInfo: GameInfo;
-  public myDeck: Deck;
-
+  // A virer (insérer dans objet game)
   public me = {
     "deck" : [],
     "hand" : [],
@@ -58,41 +55,51 @@ export class GameComponent implements OnInit {
     "hand" : [],
   }
 
+  // Phase
+  public isPassPhase: boolean = false;
+  public currentPhase: string;
+
+
+  // TEST FUNCTIONS
+
+  private deckCreator() {
+    let decklist: Deck = new Deck("test", "test", [], false);
+    for (let i = 0; i < 6; i++) {
+      let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"testManacost" + i,["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,"test" + i + ".jpg");
+      decklist.cards.push(card);
+    }
+    return decklist;
+  }
+
+
   constructor(public globalVariables: GlobalVariables,  private socketService: SocketioService) {
 
     // TEST INITIALIZER
     if (globalVariables.myself == null) {
-      this.myself = new User("Spikey",null,true,true);
-      this.opponent = new User("Johnson",null,true,true);
-      this.gameInfo = new GameInfo(this.myself,this.opponent,true,false,"Spikey & Johnson game",true);
-      let decklist: Card[] = [];
-      for (let i = 0; i < 6; i++) {
-        let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"testManacost" + i,["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,"test" + i + ".jpg");
-        decklist.push(card);
-      }
-      this.myDeck = new Deck(this.myself.username + " Deck",this.opponent.username + " Deck",decklist,true);
+      let myself = new User("Spikey",null,true,true);
+      let opponent = new User("Johnson",null,true,true);
+      let gameInfo = new GameInfo(myself,opponent,true,false,"Spikey & Johnson game",true);
+      this.game = new Game(myself,opponent,gameInfo);
     } else {
-      this.myself = new User("Johnson",null,true,true);
-      this.opponent = new User("Spikey",null,true,true);
-      this.gameInfo = new GameInfo(this.myself,this.opponent,true,false,"Spikey & Johnson game",true);
-      let decklist: Card[] = [];
-      for (let i = 0; i < 6; i++) {
-        let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"testManacost" + i,["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,"test" + i + ".jpg");
-        decklist.push(card);
-      }
-      this.myDeck = new Deck(this.myself.username + " Deck",this.opponent.username + " Deck",decklist,true);
+      let myself = new User("Johnson",null,true,true);
+      let opponent = new User("Spikey",null,true,true);
+      let gameInfo = new GameInfo(myself,opponent,true,false,"Spikey & Johnson game",true);
+      this.game = new Game(myself,opponent,gameInfo);
     }
+    
 
-    /* DONT DELETE, REAL INITIALIZER
-    this.gameInfo = this.globalVariables.gameInfo;
-    this.myDeck = globalVariables.currentDeck;
-    this.myself = this.globalVariables.myself;
-    if (this.gameInfo.isCreator == true) {
-      this.opponent = this.gameInfo.roomJoiner;
+     // DONT DELETE, REAL INITIALIZER
+     /*
+    let gameInfo = this.globalVariables.gameInfo;
+    let opponent;
+    if (gameInfo.isCreator == true) {
+      opponent = gameInfo.roomJoiner;
     } else {
-      this.opponent = this.gameInfo.roomCreator;
+      opponent = gameInfo.roomCreator;
     }
+    this.game = new Game(this.globalVariables.myself,opponent,this.globalVariables.gameInfo);
     */
+    
 
     this.setImgSize();
 
@@ -105,8 +112,8 @@ export class GameComponent implements OnInit {
   setSocketIdReceiver() {
     this.socketService.socket.on("setSocketId", (data) => {
       console.log("Receive setSocketId");
-      this.myself.socketId = data;
-      this.socketService.socket.emit("initializeGame", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+      this.game.myselfUser.socketId = data;
+      this.socketService.socket.emit("initializeGame", this.game.getDataForSocketConnexionWithDeck(this.deckCreator()));
     })
   }
 
@@ -114,8 +121,8 @@ export class GameComponent implements OnInit {
     // Data should be a socket.Id
     this.socketService.socket.on("initializeGame", () => {
       console.log("Receive initializeGame");
-      console.log(this.gameInfo.socketRoomName);
-      this.socketService.socket.emit("fetchGameState", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+      console.log(this.game.gameInfo.socketRoomName);
+      this.socketService.socket.emit("fetchGameState", this.game.getDataForSocketConnexion());
     })
   }
 
@@ -128,13 +135,15 @@ export class GameComponent implements OnInit {
       this.opp.hand = data.oppHandArray;
       console.log("this.me.hand");
       console.log(this.me.hand);
+      this.isPassPhase = true; // A supprimer plus tard
+      this.currentPhase = "Main Phase";
     })
   }
 
   // On start
 
   ngOnInit(): void {
-    this.socketService.socket.emit("setSocketId", {"myself": this.myself,"opponent": this.opponent,"gameInfo": this.gameInfo,"myDeck": this.myDeck});
+    this.socketService.socket.emit("setSocketId", this.game.getDataForSocketConnexion());
     this.setSocketIdReceiver();
     this.initializeGameReceiver();
     this.fetchGameStateReceiver();
@@ -154,8 +163,7 @@ export class GameComponent implements OnInit {
   }
 
   mouseEnterCardImg(event) {
-    console.log(event);
-    this.xPosMouse = event.clientX;
+    this.xPosMouse = event.clientX + this.cardbackWidth;
     this.yPosMouse = event.clientY;
     this.imgUrl = event.target.currentSrc;
     this.isHover = true;
@@ -163,9 +171,17 @@ export class GameComponent implements OnInit {
   }
 
   mouseLeaveCardImg(event) {
-    console.log(event);
     this.isHover = false;
     this.imgUrl = null;
+  }
+
+  playCard(event) {
+    console.log(event.target.id);
+    // get the id, find the card, execute the code
+  }
+
+  passPhase() {
+
   }
 
   setCardHover(event) {
