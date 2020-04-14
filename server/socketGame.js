@@ -1,6 +1,6 @@
-const GameManager = require('./game.src/gameManager.js');
+const GameManager = require('./game.src/game.js');
 
-var gameManager;
+var game;
 
 var lastReceivedEmitData = {
 	"max & dad game": null,
@@ -25,30 +25,48 @@ function verifySynchronicity(data) {
 };
 
 
+/// TEMP ///
+socketIdsyUsers = {}
+
 ///////////////////////////
 ///////// SOCKETS /////////
 ///////////////////////////
 
 module.exports = function (io, ioData) {
-	'Spikey & Johnson game'
 	ioData.socket.on("setSocketId", (data) => {
-		io.to(ioData.socket.id).emit('setSocketId', ioData.socket.id);
+		//console.log("setSocketId");
+		let dataToReturn = {
+			"mySocketId": null,
+			"oppSocketId": null,
+		};
+
+		socketIdsyUsers[data.myself.username] = ioData.socket.id;
+		dataToReturn.mySocketId = ioData.socket.id;
+		if (socketIdsyUsers[data.opponent.username]) {
+			dataToReturn.oppSocketId = socketIdsyUsers[data.opponent.username];
+		}
+		io.to(ioData.socket.id).emit('setSocketId', dataToReturn);
 		ioData.socket.join(data.gameInfo.socketRoomName);
-		//console.log(ioData.socket.adapter.rooms[data.gameInfo.socketRoomName]);
+	});
+
+	ioData.socket.on("setOppSocketId", (data) => {
+		//console.log("setOppSocketId");
+		console.log(data);
+		console.log(socketIdsyUsers);
+		console.log("ioData.socket.id : " + ioData.socket.id);
+		console.log("data.opponent.socketId : " + data.opponent.socketId);
+		io.to(data.opponent.socketId).emit('setOppSocketIdReceiver', {"oppSocketId": data.myself.socketId});
+		socketIdsyUsers = {};
 	});
 
 	// When both player trigger this, setup game server side
 	ioData.socket.on("initializeGame", (data) => {
-		console.log("\nReceive initializeGame");//console.log(data);console.log("");
-		//console.log("ioData.socket.id");console.log(ioData.socket.id);
+		//console.log("\nReceive initializeGame");
 		if (verifySynchronicity(data) == true) {
-			//console.log("verifySynchronicity is true");
-			gameManager = new GameManager(data, data.myDeck, initializeGameFirstPlayerData[data.gameInfo.socketRoomName].myDeck);
-			gameManager.initializeGame();
-			//console.log(ioData.socket.adapter.rooms[data.gameInfo.socketRoomName]);
-			io.to(data.gameInfo.socketRoomName).emit('initializeGame', ioData.socket.id);
+			game = new GameManager(data, data.myDeck, initializeGameFirstPlayerData[data.gameInfo.socketRoomName].myDeck);
+			game.initializeGame();
+			io.to(data.gameInfo.socketRoomName).emit('initializeGameReceiver', ioData.socket.id);
 		} else {
-			//console.log("verifySynchronicity is false");
 			if (initializeGameFirstPlayerData[data.gameInfo.socketRoomName] == null) {
 				initializeGameFirstPlayerData[data.gameInfo.socketRoomName] = data;
 			} 
@@ -57,9 +75,16 @@ module.exports = function (io, ioData) {
 
 	// Fetch gameState
 	ioData.socket.on("fetchGameState", (data) => {
-		console.log("\nReceive fetchGameState");//console.log(data);console.log("");
-		//console.log("ioData.socket.id");console.log(ioData.socket.id);
-		io.to(data.myself.socketId).emit("fetchGameState",gameManager.getGameState(data.myself.username));
+		//console.log("\nReceive fetchGameState");console.log(data);console.log("");
+		io.to(data.myself.socketId).emit("fetchGameState",game.fetchGameState(data.myself.username));
+		
+	});
+
+	// Player clicked pass button
+	ioData.socket.on("passPriority", (data) => {
+		//console.log("\nReceive passPriority");console.log(data);console.log("");
+		game.receivePassPhase(data.myself.username);
+		io.to(data.gameInfo.socketRoomName).emit("passPriorityReceiver",null);
 		
 	});
   

@@ -3,8 +3,20 @@ const Hand = require('./hand');
 
 class Player {
 	usernameString;
-	deck;
-	hand;
+
+	lifeNumber;
+	manapoolArray;
+	levelPointPoolNumber;
+
+	deckCardArray;
+	handCardArray;
+	field;
+	
+	opponentPlayer;
+
+	haveTurnBool = false;
+	havePriorityBool = false;
+
 	constructor(usernameString, deck) {
 		this.usernameString = usernameString;
 		this.hand = new Hand();

@@ -5,7 +5,7 @@ import { Field } from './Field';
 
 export class Player {
 
-	public name;
+	public username: string;
 
 	public life: number;
 	public manapool: Manapool[];
@@ -15,8 +15,13 @@ export class Player {
 	public hand: Card[];
 	public field: Field;
 
-	constructor(name: string) {
-		this.name = name;
+	public haveTurn: boolean;
+	public havePriority: boolean;
+
+	public opponent: Player;
+
+	constructor(username: string) {
+		this.username = username;
 	}
 
 

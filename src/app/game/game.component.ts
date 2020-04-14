@@ -44,21 +44,6 @@ export class GameComponent implements OnInit {
   public yPosMouse: Position;
   public imgUrl: string;
 
-  // A virer (insérer dans objet game)
-  public me = {
-    "deck" : [],
-    "hand" : [],
-  }
-
-  public opp = {
-    "deck" : [],
-    "hand" : [],
-  }
-
-  // Phase
-  public isPassPhase: boolean = false;
-  public currentPhase: string;
-
 
   // TEST FUNCTIONS
 
@@ -80,6 +65,8 @@ export class GameComponent implements OnInit {
       let opponent = new User("Johnson",null,true,true);
       let gameInfo = new GameInfo(myself,opponent,true,false,"Spikey & Johnson game",true);
       this.game = new Game(myself,opponent,gameInfo);
+      console.log("INIT");
+      console.log(this.game.opponentUser);
     } else {
       let myself = new User("Johnson",null,true,true);
       let opponent = new User("Spikey",null,true,true);
@@ -111,33 +98,68 @@ export class GameComponent implements OnInit {
 
   setSocketIdReceiver() {
     this.socketService.socket.on("setSocketId", (data) => {
-      console.log("Receive setSocketId");
-      this.game.myselfUser.socketId = data;
-      this.socketService.socket.emit("initializeGame", this.game.getDataForSocketConnexionWithDeck(this.deckCreator()));
-    })
+      console.log("Receive setSocketId");console.log(data);
+      this.game.myselfUser.socketId = data.mySocketId;
+      if (data.oppSocketId != null) {
+        this.game.opponentUser.socketId = data.oppSocketId;
+        this.socketService.socket.emit("setOppSocketId", this.game.getDataForSocketConnexion());
+        this.socketService.socket.emit("initializeGame",this.game.getDataForSocketConnexionWithDeck(this.deckCreator()));
+      }
+    });
+  }
+
+  setOppSocketIdReceiver() {
+    this.socketService.socket.on("setOppSocketIdReceiver", (data) => {
+      console.log("Receive setOppSocketIdReceiver");console.log(data);
+      this.game.opponentUser.socketId = data.oppSocketId;
+      this.socketService.socket.emit("initializeGame",this.game.getDataForSocketConnexionWithDeck(this.deckCreator()));
+    });
   }
 
   initializeGameReceiver() {
     // Data should be a socket.Id
-    this.socketService.socket.on("initializeGame", () => {
-      console.log("Receive initializeGame");
-      console.log(this.game.gameInfo.socketRoomName);
+    this.socketService.socket.on("initializeGameReceiver", () => {
+      console.log("Receive initializeGameReceiver");
       this.socketService.socket.emit("fetchGameState", this.game.getDataForSocketConnexion());
-    })
+    });
   }
 
   fetchGameStateReceiver() {
     this.socketService.socket.on("fetchGameState", (data) => {
       console.log("Receive fetchGameState");console.log(data);
-      this.me.deck = data.myDeckArray;
-      this.me.hand = data.myHandArray;
-      this.opp.deck = data.oppDeckArray;
-      this.opp.hand = data.oppHandArray;
-      console.log("this.me.hand");
-      console.log(this.me.hand);
-      this.isPassPhase = true; // A supprimer plus tard
-      this.currentPhase = "Main Phase";
-    })
+
+      this.game.turn.setCurrentPhase(data.currentPhaseString);
+      this.game.turn.activePlayer = this.game.getPlayerByName(data.activePlayerUsernameString);
+
+      this.game.me.haveTurn = data.haveTurnBool;
+      this.game.me.havePriority = data.havePriorityBool;
+      this.game.isStackEmpty = data.isStackEmptyBool;
+
+      this.game.me.deck = data.myDeckArray;
+      this.game.me.hand = data.myHandArray;
+
+      this.game.opponent.deck = data.oppDeckArray;
+      this.game.opponent.hand = data.oppHandArray;
+    });
+  }
+
+  passPriorityReceiver() {
+    this.socketService.socket.on("passPriorityReceiver", (data) => {
+      console.log("Receive passPriorityReceiver");
+      this.socketService.socket.emit("fetchGameState", this.game.getDataForSocketConnexion());
+      
+      /*
+      if (this.game.isStackEmpty == true && this.game.turn.activePlayer.username == this.game.me.username) {
+        this.game.turn.nextPhase();
+      }
+      else {
+        this.game.me.havePriority = true;
+        this.game.opponent.havePriority = false;
+      }
+      */
+    });
+    
+
   }
 
   // On start
@@ -147,6 +169,8 @@ export class GameComponent implements OnInit {
     this.setSocketIdReceiver();
     this.initializeGameReceiver();
     this.fetchGameStateReceiver();
+    this.passPriorityReceiver();
+    this.setOppSocketIdReceiver();
 
   }
 
@@ -167,7 +191,6 @@ export class GameComponent implements OnInit {
     this.yPosMouse = event.clientY;
     this.imgUrl = event.target.currentSrc;
     this.isHover = true;
-
   }
 
   mouseLeaveCardImg(event) {
@@ -175,13 +198,20 @@ export class GameComponent implements OnInit {
     this.imgUrl = null;
   }
 
+  getPriority() {
+
+  }
+
+  passPriority() {
+    console.log("passPriority")
+    this.game.me.havePriority = false;
+    this.game.opponent.havePriority = true;
+    this.socketService.socket.emit("passPriority", this.game.getDataForSocketConnexion());
+  }
+
   playCard(event) {
     console.log(event.target.id);
     // get the id, find the card, execute the code
-  }
-
-  passPhase() {
-
   }
 
   setCardHover(event) {

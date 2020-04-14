@@ -6,8 +6,8 @@
 
 
 <div class="row">
-	<button class="col s1" (click)="passPhase()">Pass Phase</button>
-	<h6 class="col s10">Vous êtes en {{currentPhase}}</h6>
+	<button *ngIf="game.me.havePriority" class="col s1" (click)="passPriority()">Pass</button>
+	<h6 class="col s10">{{game.myselfUser.username}} - Tour de {{game.turn.activePlayer.username}} - {{game.turn.currentPhase.phaseName}}</h6>
 </div>
 
 <div class="row">
@@ -18,7 +18,7 @@
 	</div>
 	<div class="col s10 imgbox">
 		<div class="row">
-			<a *ngFor="let card of me.hand" (click)="playCard($event)">
+			<a *ngFor="let card of game.me.hand" (click)="playCard($event)">
 				<img  class="cardimg" 
 							src="../../assets/image/cards/{{card.imgUrlString}}"
 							id="{{card.idInt}}" 

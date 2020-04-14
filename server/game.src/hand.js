@@ -7,9 +7,7 @@ class Hand {
 	}
 
 	getCardArray(revealedBool) {
-		console.log(revealedBool);
 		if (revealedBool == true) {
-			console.log(this.cardArray);
 			return this.cardArray;
 		}
 	
