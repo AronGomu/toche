@@ -49,8 +49,8 @@ export class GameComponent implements OnInit {
 
   private deckCreator() {
     let decklist: Deck = new Deck("test", "test", [], false);
-    for (let i = 0; i < 6; i++) {
-      let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"testManacost" + i,["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,"test" + i + ".jpg");
+    for (let i = 0; i < 15; i++) {
+      let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"",["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,true,"test" + i + ".jpg");
       decklist.cards.push(card);
     }
     return decklist;
@@ -129,17 +129,29 @@ export class GameComponent implements OnInit {
       console.log("Receive fetchGameState");console.log(data);
 
       this.game.turn.setCurrentPhase(data.currentPhaseString);
-      this.game.turn.activePlayer = this.game.getPlayerByName(data.activePlayerUsernameString);
+      this.game.turn.hasTurnPlayer = this.game.getPlayerByName(data.hasTurnPlayerUsernameString);
 
       this.game.me.haveTurn = data.haveTurnBool;
       this.game.me.havePriority = data.havePriorityBool;
+
+      this.game.me.yieldThroughTurn = data.yieldThroughTurnBool;
+
       this.game.isStackEmpty = data.isStackEmptyBool;
 
+      this.game.me.manapool.colorlessMana;
+      this.game.me.manapool.blueMana;
+      this.game.me.manapool.blackMana;
       this.game.me.deck = data.myDeckArray;
       this.game.me.hand = data.myHandArray;
 
+      this.game.opponent.manapool.colorlessMana;
+      this.game.opponent.manapool.blueMana;
+      this.game.opponent.manapool.blackMana;
       this.game.opponent.deck = data.oppDeckArray;
       this.game.opponent.hand = data.oppHandArray;
+
+      console.log("my hand");
+      console.log(this.game.me.hand);
     });
   }
 
@@ -149,7 +161,7 @@ export class GameComponent implements OnInit {
       this.socketService.socket.emit("fetchGameState", this.game.getDataForSocketConnexion());
       
       /*
-      if (this.game.isStackEmpty == true && this.game.turn.activePlayer.username == this.game.me.username) {
+      if (this.game.isStackEmpty == true && this.game.turn.hasTurnPlayer.username == this.game.me.username) {
         this.game.turn.nextPhase();
       }
       else {
@@ -209,9 +221,16 @@ export class GameComponent implements OnInit {
     this.socketService.socket.emit("passPriority", this.game.getDataForSocketConnexion());
   }
 
-  playCard(event) {
+  passTurn() {
+    console.log("passPriority")
+    this.game.me.havePriority = false;
+    this.game.opponent.havePriority = true;
+    this.socketService.socket.emit("passTurn", this.game.getDataForSocketConnexion());
+  }
+
+  playCardFromHand(event) {
     console.log(event.target.id);
-    // get the id, find the card, execute the code
+    this.socketService.socket.emit("playCardFromHand", this.game.getDataForSocketConnexionWithCardId(event.target.id));
   }
 
   setCardHover(event) {

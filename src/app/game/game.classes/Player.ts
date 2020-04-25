@@ -1,5 +1,5 @@
 import { Deck } from 'src/app/classes/Deck';
-import { Manapool } from './Mana';
+import { Manapool } from './Manapool';
 import { Card } from 'src/app/classes/card';
 import { Field } from './Field';
 
@@ -8,7 +8,7 @@ export class Player {
 	public username: string;
 
 	public life: number;
-	public manapool: Manapool[];
+	public manapool: Manapool;
 	public levelPointPool: number;
 
 	public deck: Card[];
@@ -17,11 +17,13 @@ export class Player {
 
 	public haveTurn: boolean;
 	public havePriority: boolean;
+	public yieldThroughTurn: boolean;
 
 	public opponent: Player;
 
 	constructor(username: string) {
 		this.username = username;
+		this.manapool = new Manapool();
 	}
 
 

@@ -7,7 +7,8 @@
 
 <div class="row">
 	<button *ngIf="game.me.havePriority" class="col s1" (click)="passPriority()">Pass</button>
-	<h6 class="col s10">{{game.myselfUser.username}} - Tour de {{game.turn.activePlayer.username}} - {{game.turn.currentPhase.phaseName}}</h6>
+	<button *ngIf="game.me.havePriority" class="col s1" (click)="passTurn()">Pass Turn</button>
+	<h6 class="col s10">{{game.myselfUser.username}} - Tour de {{game.turn.hasTurnPlayer.username}} - {{game.turn.currentPhase.phaseName}}</h6>
 </div>
 
 <div class="row">
@@ -18,15 +19,30 @@
 	</div>
 	<div class="col s10 imgbox">
 		<div class="row">
-			<a *ngFor="let card of game.me.hand" (click)="playCard($event)">
-				<img  class="cardimg" 
+			<a *ngFor="let card of game.me.hand" (click)="playCardFromHand($event)">
+
+				<!-- Playable cards -->
+				<span>{{card.playableBool}}</span>
+				<img *ngIf="card.playableBool; else elseBlock" class="playable"
 							src="../../assets/image/cards/{{card.imgUrlString}}"
 							id="{{card.idInt}}" 
 							[height]=imgHeight 
 							[width]=imgWidth 
 							(mouseenter)="mouseEnterCardImg($event)" 
 							(mouseleave)="mouseLeaveCardImg($event)"
+							(onclick)="playCardFromHand($event)"
 				>
+
+				<ng-template #elseBlock>
+						<img class=""
+							src="../../assets/image/cards/{{card.imgUrlString}}"
+							id="{{card.idInt}}" 
+							[height]=imgHeight 
+							[width]=imgWidth 
+							(mouseenter)="mouseEnterCardImg($event)" 
+							(mouseleave)="mouseLeaveCardImg($event)"
+					>
+				</ng-template>
 			</a>
 		</div>
 	</div>

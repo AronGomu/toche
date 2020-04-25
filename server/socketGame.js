@@ -83,9 +83,22 @@ module.exports = function (io, ioData) {
 	// Player clicked pass button
 	ioData.socket.on("passPriority", (data) => {
 		//console.log("\nReceive passPriority");console.log(data);console.log("");
-		game.receivePassPhase(data.myself.username);
+		game.receivePassPriority(data.myself.username);
 		io.to(data.gameInfo.socketRoomName).emit("passPriorityReceiver",null);
-		
+	});
+
+	// Player clicked pass turn button
+	ioData.socket.on("passTurn", (data) => {
+		//console.log("\nReceive passPriority");console.log(data);console.log("");
+		game.receivePassTurn(data.myself.username);
+		io.to(data.gameInfo.socketRoomName).emit("passPriorityReceiver",null);
+	});
+
+	// Player clicked pass turn button
+	ioData.socket.on("playCardFromHand", (data) => {
+		//console.log("\nReceive passPriority");console.log(data);console.log("");
+		game.playCardFromHand(data.cardId);
+		io.to(data.gameInfo.socketRoomName).emit("playCardFromHandReceiver",null);
 	});
   
 }

@@ -43,39 +43,68 @@ class GameManager {
 		let indexStartingPlayerNumber = getRandomInt(0,1);
 		this.playerArray[indexStartingPlayerNumber].haveTurnBool = true;
 		this.playerArray[indexStartingPlayerNumber].havePriorityBool = true;
-		this.turn.activePlayer = this.playerArray[indexStartingPlayerNumber];
+		this.turn.hasTurnPlayer = this.playerArray[indexStartingPlayerNumber];
+		this.turn.hasPriorityPlayer = this.turn.hasTurnPlayer;
+		this.turn.hasTurnPlayer.manapool.addMana("UB");
+		this.checkAllPayableCardsAllZones();
+	}
+
+	checkAllPayableCardsAllZones() {
+		this.playerArray.forEach(player => {
+			player.checkAllPayableCardsAllZones(this.turn, this.isStackEmptyBool);
+		});
 	}
 
 	fetchGameState(username) {
+
+		this.checkAllPayableCardsAllZones();
 		
 		let data = {
 			"currentPhaseString": null,
-			"activePlayerUsernameString": null,
+			"hasTurnPlayerUsernameString": null,
 
-			'haveTurnBool': null,
-			'havePriorityBool' : null,
-			'isStackEmptyBool' : null,
+			"haveTurnBool": null,
+			"havePriorityBool" : null,
+			"yieldThroughTurnBool": null,
 
-			'myDeckArray' : null,
-			'myHandArray' : null,
+			"isStackEmptyBool" : null,
 
-			'oppDeckArray' : null,
-			'oppHandArray' : null,
+			"myBlueMana" : null,
+			"myBlackMana" : null,
+			"myColorlessMana" : null,
+			"myDeckArray" : null,
+			"myHandArray" : null,
+
+			"oppBlueMana" : null,
+			"oppBlackMana" : null,
+			"oppColorlessMana" : null,
+			"oppDeckArray" : null,
+			"oppHandArray" : null,
 		}
 
 		this.playerArray.forEach(player => {
+
 			if (username == player.usernameString) {
 				data.currentPhaseString = this.turn.phase.phaseNameString;
-				data.activePlayerUsernameString = this.turn.activePlayer.usernameString;
+				data.hasTurnPlayerUsernameString = this.turn.hasTurnPlayer.usernameString;
+				data.yieldThroughTurnBool = player.yieldThroughTurnBool;
 
 				data.haveTurnBool = player.haveTurnBool;
 				data.havePriorityBool = player.havePriorityBool;
 				data.isStackEmptyBool = this.isStackEmptyBool;
 
+				data.myColorlessMana = player.manapool.colorlessManaInt;
+				data.myBlueMana = player.manapool.blueManaInt;
+				data.myBlackMana = player.manapool.blackManaInt;
+
 				data.myDeckArray = player.getDeck(false);
 				data.myHandArray = player.getHand(true);
 			}
 			else {
+				data.oppColorlessMana = player.manapool.colorlessManaInt;
+				data.oppBlueMana = player.manapool.blueManaInt;
+				data.oppBlackMana = player.manapool.blackManaInt;
+
 				data.oppDeckArray = player.getDeck(false);
 				data.oppHandArray = player.getHand(false);
 			}
@@ -84,17 +113,50 @@ class GameManager {
 		return data;
 	}
 
-	receivePassPhase(usernameString) {
+	receivePassPriority(usernameString) {
+
+		// Fetch Player
 		let player = this.getPlayerByName(usernameString);
-		if (this.isStackEmptyBool == true && player.usernameString == this.turn.activePlayer.opponentPlayer.usernameString) {
+
+		// Setting turn and priority of both players
+		if (this.isStackEmptyBool == true && player.usernameString == this.turn.hasTurnPlayer.opponentPlayer.usernameString) {
 			this.turn.nextPhase();
 		}
 		else {
+			this.turn.hasPriorityPlayer = this.turn.hasPriorityPlayer.opponentPlayer;
 			player.havePriorityBool = false;
     	player.opponentPlayer.havePriorityBool = true;
 		}
+
+		// Do actions depending of the phase
+		if (this.turn.phase.phaseNameString == "draw" && this.turn.hasTurnPlayer.usernameString == this.turn.hasPriorityPlayer.usernameString) {
+			this.turn.hasTurnPlayer.manapool.addMana("UB");
+			this.turn.hasTurnPlayer.draw(1);
+			this.playerArray.forEach(player => {
+				player.yieldThroughTurnBool = false;
+			});
+		}
+
+		this.playerArray.forEach(player => {
+		});
+
+		// If player yield through turn, skip priority
+		if (this.turn.hasPriorityPlayer.yieldThroughTurnBool == true) {
+			this.receivePassPriority(this.turn.hasPriorityPlayer.usernameString);
+		}
+
 	}
 
+	receivePassTurn(usernameString) {
+		let player = this.getPlayerByName(usernameString);
+		player.yieldThroughTurnBool = true;
+		this.receivePassPriority(usernameString);
+	}
+
+
+	playCardFromHand(cardId) {
+		console.log("playCardFromHand, cardId : " + cardId);
+	}
 
 
 }

@@ -45,4 +45,8 @@ export class Game {
     return {"myself": this.myselfUser,"opponent": this.opponentUser,"gameInfo": this.gameInfo,"myDeck": deck}
   }
 
+  public getDataForSocketConnexionWithCardId(cardId: string) {
+    return {"myself": this.myselfUser,"opponent": this.opponentUser,"gameInfo": this.gameInfo,"cardId": cardId}
+  }
+
 }

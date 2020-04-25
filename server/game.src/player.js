@@ -1,3 +1,4 @@
+const Manapool = require('./manapool');
 const Deck = require('./deck');
 const Hand = require('./hand');
 
@@ -5,20 +6,22 @@ class Player {
 	usernameString;
 
 	lifeNumber;
-	manapoolArray;
+	manapool;
 	levelPointPoolNumber;
 
-	deckCardArray;
-	handCardArray;
+	deck;
+	hand;
 	field;
 	
 	opponentPlayer;
 
 	haveTurnBool = false;
 	havePriorityBool = false;
+	yieldThroughTurnBool = false;
 
 	constructor(usernameString, deck) {
 		this.usernameString = usernameString;
+		this.manapool = new Manapool();
 		this.hand = new Hand();
 		this.deck = new Deck(deck.cards);
 	}
@@ -39,6 +42,30 @@ class Player {
 
 	getHand(revealedBool) {
 		return this.hand.getCardArray(revealedBool);
+	}
+
+	checkAllPayableCards(turn, isStackEmptyBool, zoneCardArray) {
+		zoneCardArray.forEach(card => {
+			if (turn.checkIfPlayable(card, isStackEmptyBool, this.havePriorityBool) == true) {
+				if (this.manapool.checkIfPayable(card.manacostString) == true) {
+					card.playableBool = true;
+					//console.log("Card is payable");
+				}
+				else {
+					card.playableBool = false;
+					//console.log("Card is not payable");
+				}
+			}
+			else {
+				card.playableBool = false;
+				//console.log("Card is not playable");
+			}
+		});
+	}
+
+	checkAllPayableCardsAllZones(turn, isStackEmptyBool) {
+		this.checkAllPayableCards(turn, isStackEmptyBool, this.deck.cardArray, this.havePriorityBool);
+		this.checkAllPayableCards(turn, isStackEmptyBool, this.hand.cardArray, this.havePriorityBool);
 	}
 }
 

@@ -12,7 +12,7 @@ class Phase {
 
 
 export class Turn {
-  public activePlayer: Player;
+  public hasTurnPlayer: Player;
 
 	public phases: Phase[];
   public currentPhase: Phase;
@@ -20,8 +20,8 @@ export class Turn {
   public havePriority: boolean;
 
 
-    
-  constructor(activePlayer: Player) {
+  
+  constructor(hasTurnPlayer: Player) {
     let drawPhase: Phase = new Phase("draw", null);
     let main1Phase: Phase = new Phase("main1", null); 
     let battlePhase: Phase = new Phase("battle", null); 
@@ -35,8 +35,9 @@ export class Turn {
     this.phases = [drawPhase,main1Phase,battlePhase,main2Phase,endPhase];
     this.currentPhase = this.phases[0];
 
-    this.activePlayer = activePlayer;
+    this.hasTurnPlayer = hasTurnPlayer;
   }
+  
 
   public setCurrentPhase(phaseName: String) {
     this.phases.forEach(phase => {
@@ -51,13 +52,13 @@ export class Turn {
     console.log("nextPhase");
     if (this.currentPhase.phaseName == "end") {
       console.log("is end");
-      console.log(this.activePlayer);
-      this.activePlayer = this.activePlayer.opponent;
-      console.log(this.activePlayer);
+      console.log(this.hasTurnPlayer);
+      this.hasTurnPlayer = this.hasTurnPlayer.opponent;
+      console.log(this.hasTurnPlayer);
     }
     this.currentPhase = this.currentPhase.next;
-    this.activePlayer.havePriority = true;
-    this.activePlayer.opponent.havePriority = false;
+    this.hasTurnPlayer.havePriority = true;
+    this.hasTurnPlayer.opponent.havePriority = false;
   }
   */
 

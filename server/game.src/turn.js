@@ -10,12 +10,13 @@ class Phase {
 
 class Turn {
 
-  activePlayer;
+  hasTurnPlayer;
+  hasPriorityPlayer;
 
 	phases;
   phase;
 
-  constructor(activePlayer) {
+  constructor(hasTurnPlayer) {
     let drawPhase = new Phase("draw", null);
     let main1Phase = new Phase("main1", null); 
     let battlePhase = new Phase("battle", null); 
@@ -28,21 +29,41 @@ class Turn {
     endPhase.next = drawPhase;
     this.phases = [drawPhase,main1Phase,battlePhase,main2Phase,endPhase];
     this.phase = this.phases[0];
-
-    this.activePlayer = activePlayer;
   }
 
   nextPhase() {
     if (this.phase.phaseNameString == "end") {
-      this.activePlayer = this.activePlayer.opponentPlayer;
-      this.activePlayer.haveTurnBool = true;
-      this.activePlayer.opponentPlayer.haveTurnBool = false;
+      this.hasTurnPlayer = this.hasTurnPlayer.opponentPlayer;
+      this.hasTurnPlayer.haveTurnBool = true;
+      this.hasTurnPlayer.opponentPlayer.haveTurnBool = false;
+    }
+    else {
+      this.hasPriorityPlayer = this.hasPriorityPlayer.opponentPlayer;
     }
     this.phase = this.phase.next;
-    this.activePlayer.havePriorityBool = true;
-    this.activePlayer.opponentPlayer.havePriorityBool = false;
+    this.hasTurnPlayer.havePriorityBool = true;
+    this.hasTurnPlayer.opponentPlayer.havePriorityBool = false;
   }
 
+  checkIfPlayable(card, isStackEmptyBool, havePriorityBool) {
+
+    //console.log(card);
+
+    if (havePriorityBool == true) {
+      if (isStackEmptyBool == true) {
+        if (this.phase.phaseNameString == "main1" || this.phase.phaseNameString == "main2") {
+            //console.log("Sorcery is castable");
+            return true;
+        }
+      }
+      if (card.instantSpeedPlayableBool == true) {
+        //console.log("Instant is castable");
+        return true;
+      }
+    }
+    return false;
+  }
+    
 }
 
 module.exports = Turn;

@@ -9,6 +9,7 @@
     "subtype": ["Inion"],
     "attack": 2000,
     "power": 1,
+    "instantSpeedPlayable": false,
     "imgUrl": "Artiste Pensive.jpg"
 },
 {
@@ -22,5 +23,6 @@
     "subtype": null,
     "attack": null,
     "power": null,
+    "instantSpeedPlayable": false,
     "imgUrl": "Écume Arc-en-ciel.jpg"
 }]
