@@ -1,9 +1,9 @@
-const Card = require('./card');
-
 class Hand {
 	cardArray;
-	constructor() {
+	cardsManager
+	constructor(cardsManager) {
 		this.cardArray = [];
+		this.cardsManager = cardsManager;
 	}
 
 	getCardArray(revealedBool) {
@@ -14,7 +14,7 @@ class Hand {
 		let cardArrayLet = [];
 		this.cardArray.forEach(card => {
 			if (card.revealedBool == false) {
-				cardArrayLet.push(new Card());
+				cardArrayLet.push(this.cardsManager.getCardById(card.idInt).createCopy());
 			}
 			else {
 				cardArrayLet.push(card);

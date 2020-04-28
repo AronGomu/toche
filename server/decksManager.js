@@ -4,10 +4,10 @@ module.exports = function (app) {
 
 	// defining const & global variables 
   const decks = {
-    pathCardsJson: 'data/cards/cards.json',
-    pathDeck : 'data/decks/',
-    extansion: '.tdk',
-    currentPath : 'data/temp/current_deck.tdk'
+    pathCardsJson: "server/data/cards/cards.json",
+    pathDeck : "server/data/decks/",
+    extansion: ".tdk",
+    currentPath : "server/data/temp/current_deck.tdk"
   }
   
   // API

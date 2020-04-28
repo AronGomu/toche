@@ -1,11 +1,11 @@
-const Card = require('./card');
-
 class Deck {
 	cardArray;
-	constructor(cardArray) {
+	cardsManager;
+	constructor(cardArray, cardsManager) {
 		this.cardArray = [];
+		this.cardsManager = cardsManager;
 		cardArray.forEach(card => {
-			this.cardArray.push(new Card(card));
+			this.cardArray.push(this.cardsManager.getCardById(card.id).createCopy());
 		});
 	}
 
@@ -36,7 +36,7 @@ class Deck {
 		let cardArrayLet = [];
 		this.cardArray.forEach(card => {
 			if (card.revealedBool == false) {
-				cardArrayLet.push(new Card());
+				cardArrayLet.push(card.getHidden);
 			}
 			else {
 				cardArrayLet.push(card);

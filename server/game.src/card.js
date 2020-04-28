@@ -3,7 +3,8 @@ class Card {
 	idInt;
   colorString;
   factionString;
-  nameString;
+	nameString;
+	levelInt;
   manacostString;
   typeStringArray;
   archetypeStringArray;
@@ -17,11 +18,22 @@ class Card {
 
 	constructor(card) {
 
+		/*
+		if (this.constructor === Card) {
+			//throw new TypeError('Abstract class "Widget" cannot be instantiated directly.'); 
+		}
+		*/
+
+		if (this.payCost === undefined) {
+				throw new TypeError('Class miss payCost function');
+		}
+
 		if (card === undefined) {
 			this.idInt = null;
 			this.colorString = null;
 			this.factionString = null;
 			this.nameString = null;
+			this.levelInt = null;
 			this.manacostString = null;
 			this.typeStringArray = null;
 			this.archetypeStringArray = null;
@@ -30,26 +42,42 @@ class Card {
 			this.powerInt = null;
 			this.instantSpeedPlayableBool = null;
 			this.imgUrlString = null;
+			this.revealedBool = false;
+			this.playableBool = false;
 		}
 
 		else {
-			this.idInt = card.id;
-			this.colorString = card.color;
-			this.factionString = card.faction;
-			this.nameString = card.name;
-			this.manacostString = card.manacost;
-			this.typeStringArray = card.type;
-			this.archetypeStringArray = card.archetype;
-			this.subtypeStringArray = card.subtype;
-			this.attackInt = card.attack;
-			this.powerInt = card.power;
-			this.instantSpeedPlayableBool = card.instantSpeedPlayable;
-			this.imgUrlString = card.imgUrl;
+			this.idInt = card.idInt;
+			this.colorString = card.colorString;
+			this.factionString = card.factionString;
+			this.nameString = card.nameString;
+			this.levelInt = card.levelInt;
+			this.manacostString = card.manacostString;
+			this.typeStringArray = card.typeStringArray;
+			this.archetypeStringArray = card.archetypeStringArray;
+			this.subtypeStringArray = card.subtypeStringArray;
+			this.attackInt = card.attackInt;
+			this.powerInt = card.powerInt;
+			this.instantSpeedPlayableBool = card.instantSpeedPlayableBool;
+			this.imgUrlString = card.imgUrlString;
+			this.revealedBool = card.revealedBool;
+			this.playableBool = card.playableBool;
 		}
-
-		this.revealedBool = false;
-		this.playableBool = false;
 	}
+
+	createCopy() {
+		return new Card(this);
+	}
+
+	getHidden() {
+		return new Card();
+	}
+
+
+	payCost(player) {
+		throw new Error('You have to implement the method payCost!');
+	};
+
 }
 
 module.exports = Card;

@@ -89,9 +89,22 @@ class Manapool {
 		}
 
 		// Verification for colored mana first
-		
+
+		/*
+		console.log("BEFORE");
+		console.log("tempBlackManaInt : " + tempBlackManaInt);
+		console.log("toCheckBlackManaInt : " + toCheckBlackManaInt);
+		console.log("tempBlackManaInt : " + tempBlackManaInt);
+		console.log("tempBlueManaInt : " + tempBlueManaInt);
+		*/
 		tempBlackManaInt -= toCheckBlackManaInt;
 		tempBlueManaInt -= toCheckBlueManaInt;
+
+		/*
+		console.log("AFTER");
+		console.log(tempBlackManaInt);
+		console.log(tempBlueManaInt);
+		*/
 
 		if (tempBlackManaInt < 0 || tempBlueManaInt < 0) {
 			console.log("Pas assez de source coloré pour payer le cout");

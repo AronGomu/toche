@@ -1,4 +1,4 @@
-const GameManager = require('./game.src/game.js');
+const GameManager = require('../game.src/game.js');
 
 var game;
 
@@ -96,8 +96,8 @@ module.exports = function (io, ioData) {
 
 	// Player clicked pass turn button
 	ioData.socket.on("playCardFromHand", (data) => {
-		//console.log("\nReceive passPriority");console.log(data);console.log("");
-		game.playCardFromHand(data.cardId);
+		console.log("\nReceive passPriority");console.log(data);console.log("");
+		game.playCardFromHand(data.myself.username, data.cardId);
 		io.to(data.gameInfo.socketRoomName).emit("playCardFromHandReceiver",null);
 	});
   

@@ -3,6 +3,9 @@ const Deck = require('./deck');
 const Hand = require('./hand');
 
 class Player {
+
+	cardsManager;
+
 	usernameString;
 
 	lifeNumber;
@@ -19,11 +22,12 @@ class Player {
 	havePriorityBool = false;
 	yieldThroughTurnBool = false;
 
-	constructor(usernameString, deck) {
+	constructor(cardsManager, usernameString, deck) {
+		this.cardsManager = cardsManager;
 		this.usernameString = usernameString;
 		this.manapool = new Manapool();
-		this.hand = new Hand();
-		this.deck = new Deck(deck.cards);
+		this.hand = new Hand(this.cardsManager);
+		this.deck = new Deck(deck.cards, this.cardsManager);
 	}
 
 	draw(numberOfTimes) {

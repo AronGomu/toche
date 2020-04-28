@@ -35,8 +35,8 @@ module.exports = function (io) {
       io.emit('user_did_login', data);
     });
 
-    require('./socketMenus.js')(io,ioData);
-    require('./socketGame.js')(io,ioData);
+    require('./sockets/socketMenus.js')(io,ioData);
+    require('./sockets/socketGame.js')(io,ioData);
 
 });
 }

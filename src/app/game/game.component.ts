@@ -50,7 +50,7 @@ export class GameComponent implements OnInit {
   private deckCreator() {
     let decklist: Deck = new Deck("test", "test", [], false);
     for (let i = 0; i < 15; i++) {
-      let card = new Card("testId" + i,"testColor" + i,"testFaction" + i,"testName" + i,"",["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,true,"test" + i + ".jpg");
+      let card = new Card("0","testColor" + i,"testFaction" + i,"testName" + i,"",["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,true,"test" + i + ".jpg");
       decklist.cards.push(card);
     }
     return decklist;

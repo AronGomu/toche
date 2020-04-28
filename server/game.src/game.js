@@ -1,5 +1,6 @@
 const Player = require('./player');
 const Turn = require('./turn');
+const CardsManager = require('./cards/cardsManager');
 
 function getRandomInt(min, max) {
 	min = Math.ceil(min);
@@ -9,6 +10,8 @@ function getRandomInt(min, max) {
 
 class GameManager {
 
+	cardsManager;
+
 	playerUsernameList;
 
 	playerArray = [];
@@ -17,9 +20,12 @@ class GameManager {
 	isStackEmptyBool = true;
 
 	constructor(data,deck1, deck2) {
+
+		this.cardsManager = new CardsManager();
+
 		this.playerUsernameList == [data.myself.username,data.opponent.username];
-		this.playerArray.push(new Player(data.myself.username, deck1));
-		this.playerArray.push(new Player(data.opponent.username, deck2));
+		this.playerArray.push(new Player(this.cardsManager, data.myself.username, deck1));
+		this.playerArray.push(new Player(this.cardsManager, data.opponent.username, deck2));
 		this.playerArray[0].opponentPlayer = this.playerArray[1];
 		this.playerArray[1].opponentPlayer = this.playerArray[0];
 
@@ -36,6 +42,9 @@ class GameManager {
 	}
 
 	initializeGame() {
+
+		console.log(this.cardsManager.getCardNameById(1));
+
 		this.playerArray.forEach(player => {
 			player.deck.shuffle();
 			player.draw(5);
@@ -154,8 +163,10 @@ class GameManager {
 	}
 
 
-	playCardFromHand(cardId) {
+	playCardFromHand(playerUsername, cardId) {
 		console.log("playCardFromHand, cardId : " + cardId);
+		this.cardsManager.getCardById(cardId).payCost(this.getPlayerByName(playerUsername));
+
 	}
 
 
