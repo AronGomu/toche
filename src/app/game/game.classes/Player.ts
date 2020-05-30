@@ -12,12 +12,23 @@ export class Player {
 	public levelPointPool: number;
 
 	public deck: Card[];
+	public extraDeck: Card[];
+	public sideDeck: Card[];
+
 	public hand: Card[];
-	public field: Field;
+	public field: Card[];
+	public graveyard: Card[];
+	public exile: Card[];
 
 	public haveTurn: boolean;
 	public havePriority: boolean;
 	public yieldThroughTurn: boolean;
+
+	public isGraveyardEmpty: boolean = true;
+	public lastCardFromGraveyard: Card = null;
+
+	public isTopCardFromDeckRevealed: boolean = false;
+	public topCardFromDeck: Card = null;
 
 	public opponent: Player;
 

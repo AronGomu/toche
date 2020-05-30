@@ -2,12 +2,15 @@ const Card = require('./card');
 
 class Manapool {
 	
+	player;
+
 	colorlessManaInt;
 	blueManaInt;
 	blackManaInt;
 
 	
-	constructor() {
+	constructor(player) {
+		this.player = player;
 		this.colorlessManaInt = 0;
 		this.blueManaInt = 0;
 		this.blackManaInt = 0;
@@ -107,7 +110,7 @@ class Manapool {
 		*/
 
 		if (tempBlackManaInt < 0 || tempBlueManaInt < 0) {
-			console.log("Pas assez de source coloré pour payer le cout");
+			//console.log("Pas assez de source coloré pour payer le cout");
 			return false;
 		}
 
@@ -117,7 +120,7 @@ class Manapool {
 		tempAllManaLeftInt -= toCheckColorlessManaInt;
 
 		if (tempAllManaLeftInt < 0) {
-			console.log("Pas assez de source de mana pour payer le cout");
+			//console.log("Pas assez de source de mana pour payer le cout");
 			return false;
 		}
 

@@ -4,51 +4,356 @@
 	<img [src]=imgUrl>
 </div>
 
-
+<!-- Show username, user turn and buttons to pass priority -->
 <div class="row">
 	<button *ngIf="game.me.havePriority" class="col s1" (click)="passPriority()">Pass</button>
 	<button *ngIf="game.me.havePriority" class="col s1" (click)="passTurn()">Pass Turn</button>
 	<h6 class="col s10">{{game.myselfUser.username}} - Tour de {{game.turn.hasTurnPlayer.username}} - {{game.turn.currentPhase.phaseName}}</h6>
 </div>
 
+
+<!-- /////////////////////////////////////// -->
+<!-- ROW containing OPP EXTRA DECK + HAND + DECK -->
+<!-- /////////////////////////////////////// -->
+
+<!-- Show your graveyard pile, clicking on it will show the entire grave -->
 <div class="row">
+
 	<div class="col s1 imgbox">
 		<div>
-			<img class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img class="cardback"
+				src="../../assets/image/cards/cardback.png"
+				[height]=cardbackHeight
+				[width]=cardbackWidth
+				(click)="showOpponentExtraDeck" 
+				>
 		</div>
 	</div>
+
+	<!-- Show your hand -->
 	<div class="col s10 imgbox">
 		<div class="row">
-			<a *ngFor="let card of game.me.hand" (click)="playCardFromHand($event)">
+			<a *ngFor="let card of game.opponent.hand">
 
-				<!-- Playable cards -->
-				<span>{{card.playableBool}}</span>
-				<img *ngIf="card.playableBool; else elseBlock" class="playable"
+				<!-- Playable cards, can't do anything except playing them -->
+				<img *ngIf="card.playableBool" class="playable"
 							src="../../assets/image/cards/{{card.imgUrlString}}"
-							id="{{card.idInt}}" 
+							id="{{card.inGameIdInt}}" 
 							[height]=imgHeight 
 							[width]=imgWidth 
 							(mouseenter)="mouseEnterCardImg($event)" 
 							(mouseleave)="mouseLeaveCardImg($event)"
-							(onclick)="playCardFromHand($event)"
+							(click)="playCard($event)"
 				>
 
-				<ng-template #elseBlock>
-						<img class=""
-							src="../../assets/image/cards/{{card.imgUrlString}}"
-							id="{{card.idInt}}" 
-							[height]=imgHeight 
-							[width]=imgWidth 
-							(mouseenter)="mouseEnterCardImg($event)" 
-							(mouseleave)="mouseLeaveCardImg($event)"
+				<!-- Not Playable cards also not selectable (it's waiting position where the user can't do anything with the cards) -->
+				<img *ngIf="!card.playableBool && !card.selectableBool" class=""
+						src="../../assets/image/cards/{{card.imgUrlString}}"
+						id="{{card.inGameIdInt}}" 
+						[height]=imgHeight 
+						[width]=imgWidth 
+						(mouseenter)="mouseEnterCardImg($event)" 
+						(mouseleave)="mouseLeaveCardImg($event)"
 					>
-				</ng-template>
+
+				<!-- Not Playable cards but selectable but not selected -->
+				<img *ngIf="!card.playableBool && card.selectableBool && !card.selectedBool" class="selectable"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+					(click)="selectCard($event)"
+			>
+
+				<!-- Not Playable cards but selectable and selected -->
+				<img *ngIf="!card.playableBool && card.selectableBool && card.selectedBool" class="selected"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+				>
 			</a>
 		</div>
 	</div>
+
+	<!-- Show your deck pile, clicking on it will show the entire deck -->
 	<div class="col s1 imgbox">
 		<div>
-			<img class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="!game.opponent.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="game.opponent.isTopCardFromDeckRevealed" class="" 
+				src="../../assets/image/cards/{{game.opponent.topCardFromDeck.imgUrlString}}"
+				id="{{game.opponent.topCardFromDeck.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="showMyDeck($event)"
+			>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- /////////////////////////////////////// -->
+<!-- ROW containing OPPONENT FIELD + GRAVEYARD -->
+<!-- /////////////////////////////////////// -->
+
+<div class="row">
+
+	<!-- Show your hand -->
+	<div class="col s11 imgbox">
+		<div class="row">
+			<a *ngFor="let card of game.opponent.field">
+
+				<!-- Not selectable and not selected (it's waiting position where the user can't do anything with the cards) -->
+				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+				>
+
+				<!-- Show a selectable card -->
+				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+					(click)="selectFromField($event)"
+			>
+
+			<!-- Show selected card -->
+			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
+				src="../../assets/image/cards/{{card.imgUrlString}}"
+				id="{{card.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="unselectFromField($event)"
+			>
+
+			</a>
+		</div>
+	</div>
+
+	<div class="col s1 imgbox">
+		<div>
+			<img *ngIf="game.opponent.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="!game.opponent.isGraveyardEmpty" class="" 
+				src="../../assets/image/cards/{{game.opponent.lastCardFromGraveyard.imgUrlString}}"
+				id="{{game.opponent.lastCardFromGraveyard.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="showMyGraveyard($event)"
+			>
+		</div>
+	</div>
+</div>
+
+<!-- /////////////////////////////////////// -->
+<!-- ROW containing STACK -->
+<!-- /////////////////////////////////////// -->
+
+<div class="row">
+	<!-- Show your field -->
+	<div class="col s12 imgbox">
+		<div class="row">
+			<a *ngFor="let card of game.stack">
+
+				<!-- Not selectable and not selected (it's waiting position where the user can't do anything with the cards) -->
+				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+				>
+
+				<!-- Show a selectable card -->
+				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+					(click)="selectFromField($event)"
+			>
+
+			<!-- Show selected card -->
+			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
+				src="../../assets/image/cards/{{card.imgUrlString}}"
+				id="{{card.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="unselectFromField($event)"
+			>
+			</a>
+		</div>
+	</div>
+</div>
+
+
+<!-- /////////////////////////////////////// -->
+<!-- ROW containing MY FIELD + GRAVEYARD -->
+<!-- /////////////////////////////////////// -->
+
+<div class="row">
+
+	<!-- Show your field -->
+	<div class="col s11 imgbox">
+		<div class="row">
+			<a *ngFor="let card of game.me.field">
+
+				<!-- Not selectable and not selected (it's waiting position where the user can't do anything with the cards) -->
+				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+				>
+
+				<!-- Show a selectable card -->
+				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+					(click)="selectFromField($event)"
+			>
+
+			<!-- Show selected card -->
+			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
+				src="../../assets/image/cards/{{card.imgUrlString}}"
+				id="{{card.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="unselectFromField($event)"
+			>
+
+				
+			</a>
+		</div>
+	</div>
+
+	<div class="col s1 imgbox">
+		<div>
+			<img *ngIf="game.me.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="!game.me.isGraveyardEmpty" class="" 
+				src="../../assets/image/cards/{{game.me.lastCardFromGraveyard.imgUrlString}}"
+				id="{{game.me.lastCardFromGraveyard.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="showMyGraveyard($event)"
+			>
+		</div>
+	</div>
+</div>
+
+<!-- /////////////////////////////////////// -->
+<!-- ROW containing MY EXTRA DECK + HAND + DECK -->
+<!-- /////////////////////////////////////// -->
+
+<!-- Show your graveyard pile, clicking on it will show the entire grave -->
+<div class="row">
+
+	<div class="col s1 imgbox">
+		<div>
+			<img class="cardback"
+				src="../../assets/image/cards/cardback.png"
+				[height]=cardbackHeight
+				[width]=cardbackWidth
+				(click)="showMyExtraDeck" 
+				>
+		</div>
+	</div>
+
+	<!-- Show your hand -->
+	<div class="col s10 imgbox">
+		<div class="row">
+			<a *ngFor="let card of game.me.hand">
+
+				<!-- Playable cards, can't do anything except playing them -->
+				<img *ngIf="card.playableBool" class="playable"
+							src="../../assets/image/cards/{{card.imgUrlString}}"
+							id="{{card.inGameIdInt}}" 
+							[height]=imgHeight 
+							[width]=imgWidth 
+							(mouseenter)="mouseEnterCardImg($event)" 
+							(mouseleave)="mouseLeaveCardImg($event)"
+							(click)="playCard($event)"
+				>
+
+				<!-- Not Playable cards also not selectable (it's waiting position where the user can't do anything with the cards) -->
+				<img *ngIf="!card.playableBool && !card.selectableBool" class=""
+						src="../../assets/image/cards/{{card.imgUrlString}}"
+						id="{{card.inGameIdInt}}" 
+						[height]=imgHeight 
+						[width]=imgWidth 
+						(mouseenter)="mouseEnterCardImg($event)" 
+						(mouseleave)="mouseLeaveCardImg($event)"
+					>
+
+				<!-- Not Playable cards but selectable but not selected -->
+				<img *ngIf="!card.playableBool && card.selectableBool && !card.selectedBool" class="selectable"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+					(click)="selectCard($event)"
+			>
+
+				<!-- Not Playable cards but selectable and selected -->
+				<img *ngIf="!card.playableBool && card.selectableBool && card.selectedBool" class="selected"
+					src="../../assets/image/cards/{{card.imgUrlString}}"
+					id="{{card.inGameIdInt}}" 
+					[height]=imgHeight 
+					[width]=imgWidth 
+					(mouseenter)="mouseEnterCardImg($event)" 
+					(mouseleave)="mouseLeaveCardImg($event)"
+				>
+			</a>
+		</div>
+	</div>
+
+	<!-- Show your deck pile, clicking on it will show the entire deck -->
+	<div class="col s1 imgbox">
+		<div>
+			<img *ngIf="!game.me.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="game.me.isTopCardFromDeckRevealed" class="" 
+				src="../../assets/image/cards/{{game.me.topCardFromDeck.imgUrlString}}"
+				id="{{game.me.topCardFromDeck.inGameIdInt}}" 
+				[height]=imgHeight 
+				[width]=imgWidth 
+				(mouseenter)="mouseEnterCardImg($event)" 
+				(mouseleave)="mouseLeaveCardImg($event)"
+				(click)="showMyDeck($event)"
+			>
 		</div>
 	</div>
 </div>

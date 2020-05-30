@@ -1,5 +1,7 @@
 class Card {
 	
+	class = "card";
+
 	idInt;
   colorString;
   factionString;
@@ -13,19 +15,28 @@ class Card {
 	powerInt;
 	instantSpeedPlayableBool;
 	imgUrlString;
-	revealedBool;
+
+	inGameIdInt;
+	controllerPlayerUsernameString;
+	ownerPlayerUsernameString;
 	playableBool;
+	selectableBool;
+	selectedBool;
+	hiddenFromOwnerBool;
+	hiddenFromOwnerOpponentBool;
+	
 
 	constructor(card) {
-
-		/*
-		if (this.constructor === Card) {
-			//throw new TypeError('Abstract class "Widget" cannot be instantiated directly.'); 
-		}
-		*/
-
-		if (this.payCost === undefined) {
-				throw new TypeError('Class miss payCost function');
+		if (this.class != "card") {
+			if (this.getCostToPlayCard === undefined) {
+				throw new Error("getCostToPlayCard function not implemented")
+			}
+			if (this.payCostToPlayCard === undefined) {
+				throw new Error("payCostToPlayCard function not implemented")
+			}
+			if (this.resolvePlayCard === undefined) {
+				throw new Error("resolvePlayCard function not implemented")
+			}
 		}
 
 		if (card === undefined) {
@@ -42,8 +53,15 @@ class Card {
 			this.powerInt = null;
 			this.instantSpeedPlayableBool = null;
 			this.imgUrlString = null;
-			this.revealedBool = false;
+
+			this.inGameIdInt = null;
+			this.controllerPlayerUsernameString = null;
+			this.ownerPlayerUsernameString = null;
 			this.playableBool = false;
+			this.selectableBool = false;
+			this.selectedBool = false;
+			this.hiddenFromOwnerBool = true;
+			this.hiddenFromOwnerOpponentBool = true;
 		}
 
 		else {
@@ -60,23 +78,58 @@ class Card {
 			this.powerInt = card.powerInt;
 			this.instantSpeedPlayableBool = card.instantSpeedPlayableBool;
 			this.imgUrlString = card.imgUrlString;
-			this.revealedBool = card.revealedBool;
+			
+			this.inGameIdInt = card.inGameIdInt;
+			this.controllerPlayerUsernameString = card.controllerPlayerUsernameString;
+			this.ownerPlayerUsernameString = card.ownerPlayerUsernameString;
 			this.playableBool = card.playableBool;
+			this.selectableBool = card.selectableBool;
+			this.selectedBool = card.selectedBool;
+			this.hiddenFromOwnerBool = card.hiddenFromOwnerBool;
+			this.hiddenFromOwnerOpponentBool = card.hiddenFromOwnerOpponentBool;
 		}
 	}
 
-	createCopy() {
-		return new Card(this);
+	createCopy(game,ownerPlayer, controllerPlayer) {
+		let card = this;
+		card.inGameIdInt = game.generateInGameId();
+		card.ownerPlayerUsernameString = ownerPlayer.usernameString;
+		card.controllerPlayerUsernameString = controllerPlayer.usernameString;
+		return new Card(card);
 	}
 
 	getHidden() {
-		return new Card();
+		let card = new Card();
+		card.inGameIdInt = this.inGameIdInt;
+		card.imgUrlString = "cardback.png";
+		card.ownerPlayerUsernameString = this.ownerPlayerUsernameString;
+		card.controllerPlayerUsernameString = this.controllerPlayerUsernameString;
+		return new Card(card);
 	}
 
 
-	payCost(player) {
-		throw new Error('You have to implement the method payCost!');
+
+
+	getCostToPlayCardDefault(player) {
+		throw new Error('You have to implement the method getCostToPlayCard!');
+		// 2 return type possible
+		// First : a list of all the cost to pay that need the player to select manually
+		// Second : null, no cost to pay
 	};
+
+	// return null by default
+	payCostToPlayCardDefault(game, costsCompleted) {
+		return null;
+	}
+
+	resolvePlayCardDefault(game,card) {
+		console.log("Launch resolve card");
+		card.hiddenFromOwnerBool = false;
+		card.hiddenFromOwnerOpponentBool = false;
+		let playerControllingTheCard = game.getPlayerByName(card.controllerPlayerUsernameString);
+		console.log(playerControllingTheCard);
+		playerControllingTheCard.field.cardArray.push(game.stack.cardArray.pop());
+	}
 
 }
 

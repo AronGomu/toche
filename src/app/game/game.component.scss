@@ -2,6 +2,7 @@
 	cursor: grab;
 }
 
-.border {
-	border: thick;
+.selectable {
+	cursor: url('./../../assets/image/cursor/selectCardCursor.png'),     /* Modern browsers    */
+          move;                                       /* Older browsers     */
 }

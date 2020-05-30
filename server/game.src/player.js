@@ -1,10 +1,16 @@
 const Manapool = require('./manapool');
-const Deck = require('./deck');
-const Hand = require('./hand');
+const Deck = require('./zones/deck');
+const ExtraDeck = require('./zones/extraDeck')
+const SideDeck = require('./zones/sideDeck')
+const Hand = require('./zones/hand');
+const Field = require('./zones/field');
+const Graveyard = require('./zones/graveyard');
+const Exile = require('./zones/exile')
+
 
 class Player {
 
-	cardsManager;
+	game;
 
 	usernameString;
 
@@ -13,8 +19,12 @@ class Player {
 	levelPointPoolNumber;
 
 	deck;
+	extraDeck;
+	sideDeck;
 	hand;
 	field;
+	graveyard;
+	exile;
 	
 	opponentPlayer;
 
@@ -22,30 +32,57 @@ class Player {
 	havePriorityBool = false;
 	yieldThroughTurnBool = false;
 
-	constructor(cardsManager, usernameString, deck) {
-		this.cardsManager = cardsManager;
+
+	constructor(game, usernameString, decks) {
+		this.game = game;
 		this.usernameString = usernameString;
-		this.manapool = new Manapool();
-		this.hand = new Hand(this.cardsManager);
-		this.deck = new Deck(deck.cards, this.cardsManager);
+		this.manapool = new Manapool(this);
+
+		this.deck = new Deck(this, decks.deck, game);
+		this.extraDeck = new ExtraDeck(this, decks.extraDeck, game);
+		this.sideDeck = new SideDeck(this, decks.sideDeck, game);
+
+		this.hand = new Hand(this);
+		this.field = new Field(this);
+		this.graveyard = new Graveyard(this);
+		this.exile = new Exile(this);
 	}
 
 	draw(numberOfTimes) {
 		for (let i = 0; i < numberOfTimes; i++) {
+
+			// Verification of the player has no card in deck
 			if (this.deck.cardArray.length == 0) {
 				return false;
 			}
-			this.hand.cardArray.push(this.deck.cardArray.pop());
+			let card = this.deck.cardArray.pop();
+			
+			card.hiddenFromOwnerBool = false;
+			this.hand.cardArray.push(card);
 		}
 		return true;
 	}
 
-	getDeck(revealedBool) {
-		return this.deck.getCardArray(revealedBool);
+	getDeck(isMeBool) {
+		return this.deck.getCardArray(this, isMeBool);
 	}
-
-	getHand(revealedBool) {
-		return this.hand.getCardArray(revealedBool);
+	getExtraDeck(isMeBool) {
+		return this.extraDeck.getCardArray(this, isMeBool);
+	}
+	getSideDeck(isMeBool) {
+		return this.sideDeck.getCardArray(this, isMeBool);
+	}
+	getHand(isMeBool) {
+		return this.hand.getCardArray(this, isMeBool);
+	}
+	getField(isMeBool) {
+		return this.field.getCardArray(this, isMeBool);
+	}
+	getGraveyard(isMeBool) {
+		return this.graveyard.getCardArray(this, isMeBool);
+	}
+	getExile(isMeBool) {
+		return this.exile.getCardArray(this, isMeBool);
 	}
 
 	checkAllPayableCards(turn, isStackEmptyBool, zoneCardArray) {

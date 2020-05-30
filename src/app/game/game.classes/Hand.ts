@@ -1,7 +1,3 @@
-import { Card } from './../../classes/card'
-export class Hand {
-
-		public cards: Card[];
-	
-
+import { Zone } from './Zone'
+export class Hand extends Zone{
 }

@@ -40,20 +40,38 @@ export class GameComponent implements OnInit {
 
   // img hover
   public isHover: boolean = false;
-  public xPosMouse: Position;
-  public yPosMouse: Position;
+  public xPosMouse: number;
+  public yPosMouse: number;
   public imgUrl: string;
 
 
   // TEST FUNCTIONS
 
   private deckCreator() {
-    let decklist: Deck = new Deck("test", "test", [], false);
+    let deck: number[] = [];
     for (let i = 0; i < 15; i++) {
-      let card = new Card("0","testColor" + i,"testFaction" + i,"testName" + i,"",["testType" + i],["testArchetype" + i],["testSubtype" + i],1000,1,true,"test" + i + ".jpg");
-      decklist.cards.push(card);
+      deck.push(0);
     }
-    return decklist;
+
+    let extraDeck: number[] = [];
+    for (let i = 0; i < 15; i++) {
+      extraDeck.push(0);
+    }
+
+    let sideDeck: number[] = [];
+    for (let i = 0; i < 15; i++) {
+      sideDeck.push(0);
+    }
+
+    let decks = {
+      "deck": deck,
+      "extraDeck": deck,
+      "sideDeck": sideDeck
+    }
+
+    console.log(decks);
+
+    return decks;
   }
 
 
@@ -125,33 +143,9 @@ export class GameComponent implements OnInit {
   }
 
   fetchGameStateReceiver() {
-    this.socketService.socket.on("fetchGameState", (data) => {
+    this.socketService.socket.on("fetchGameStateReceiver", (data) => {
       console.log("Receive fetchGameState");console.log(data);
-
-      this.game.turn.setCurrentPhase(data.currentPhaseString);
-      this.game.turn.hasTurnPlayer = this.game.getPlayerByName(data.hasTurnPlayerUsernameString);
-
-      this.game.me.haveTurn = data.haveTurnBool;
-      this.game.me.havePriority = data.havePriorityBool;
-
-      this.game.me.yieldThroughTurn = data.yieldThroughTurnBool;
-
-      this.game.isStackEmpty = data.isStackEmptyBool;
-
-      this.game.me.manapool.colorlessMana;
-      this.game.me.manapool.blueMana;
-      this.game.me.manapool.blackMana;
-      this.game.me.deck = data.myDeckArray;
-      this.game.me.hand = data.myHandArray;
-
-      this.game.opponent.manapool.colorlessMana;
-      this.game.opponent.manapool.blueMana;
-      this.game.opponent.manapool.blackMana;
-      this.game.opponent.deck = data.oppDeckArray;
-      this.game.opponent.hand = data.oppHandArray;
-
-      console.log("my hand");
-      console.log(this.game.me.hand);
+      this.game.setGameState(data);
     });
   }
 
@@ -159,19 +153,30 @@ export class GameComponent implements OnInit {
     this.socketService.socket.on("passPriorityReceiver", (data) => {
       console.log("Receive passPriorityReceiver");
       this.socketService.socket.emit("fetchGameState", this.game.getDataForSocketConnexion());
-      
-      /*
-      if (this.game.isStackEmpty == true && this.game.turn.hasTurnPlayer.username == this.game.me.username) {
-        this.game.turn.nextPhase();
-      }
-      else {
-        this.game.me.havePriority = true;
-        this.game.opponent.havePriority = false;
-      }
-      */
     });
-    
+  }
 
+  playCardReceiver() {
+    this.socketService.socket.on("playCardReceiver", (data) => {
+      console.log("Receive playCardReceiver");console.log(data);
+      this.socketService.socket.emit("fetchGameStateToPayCost", this.game.getDataForSocketConnexion());
+      this.game.costToExploit = data;
+    });
+  }
+
+  fetchGameStateToPayCostReceiver() {
+    this.socketService.socket.on("fetchGameStateToPayCostReceiver", (data) => {
+      console.log("Receive fetchGameStateToPayCostReceiver");console.log(data);
+      this.game.setGameState(data);
+      this.game.payCost();
+    });
+  }
+
+  resolvePayCostReceiver() {
+    this.socketService.socket.on("resolvePayCostReceiver", (data) => {
+      console.log("Receive resolvePayCostReceiver");console.log(data);
+      this.socketService.socket.emit("passPriority", this.game.getDataForSocketConnexion());
+    });
   }
 
   // On start
@@ -183,6 +188,9 @@ export class GameComponent implements OnInit {
     this.fetchGameStateReceiver();
     this.passPriorityReceiver();
     this.setOppSocketIdReceiver();
+    this.playCardReceiver();
+    this.fetchGameStateToPayCostReceiver();
+    this.resolvePayCostReceiver();
 
   }
 
@@ -199,8 +207,16 @@ export class GameComponent implements OnInit {
   }
 
   mouseEnterCardImg(event) {
-    this.xPosMouse = event.clientX + this.cardbackWidth;
-    this.yPosMouse = event.clientY;
+    this.xPosMouse = <number><unknown>event.clientX + this.cardbackWidth;
+    let test: number = <number><unknown>this.xPosMouse;
+    console.log(test);
+    if (this.xPosMouse > window.innerWidth - this.originalImgWidth) {
+      this.xPosMouse = window.innerWidth - this.originalImgWidth;
+    }
+    this.yPosMouse = <number><unknown>event.clientY;
+    if (this.yPosMouse > window.innerHeight - this.originalImgHeight) {
+      this.yPosMouse = window.innerHeight - this.originalImgHeight;
+    }
     this.imgUrl = event.target.currentSrc;
     this.isHover = true;
   }
@@ -222,26 +238,55 @@ export class GameComponent implements OnInit {
   }
 
   passTurn() {
-    console.log("passPriority")
+    console.log("passTurn")
     this.game.me.havePriority = false;
     this.game.opponent.havePriority = true;
     this.socketService.socket.emit("passTurn", this.game.getDataForSocketConnexion());
   }
 
-  playCardFromHand(event) {
+  playCard(event) {
+    console.log("PLAY CARD");
     console.log(event.target.id);
-    this.socketService.socket.emit("playCardFromHand", this.game.getDataForSocketConnexionWithCardId(event.target.id));
+    console.log(this.game.getCardFromInGameId(event.target.id));
+    this.socketService.socket.emit("playCard", this.game.getDataForSocketConnexionWithinGameId(event.target.id));
+    this.game.allCards.forEach(card => {
+      card.playableBool = false;
+    });
   }
 
-  setCardHover(event) {
-    /*
-    console.log(event);
-    if (this.isHover == true) {
-      console.log("event.screenX : " + event.screenX + " & event.screenY : " + event.screenY);
-      this.xPosMouse = event.screenX;
-      this.yPosMouse = event.screenY;
+  
+  selectCard(event) {
+    console.log("CARD SELECTED");
+    console.log(event.target.id);
+    this.game.setCardsSelectedForCost(event.target.id);
+    if (this.game.payCost() === true) {
+      this.socketService.socket.emit("payCost", this.game.getDataForSocketConnexionWithcardsSelected());
     }
-    */
   }
+
+  selectFromField(event) {
+
+  }
+
+  unselectFromField(event) {
+
+  }
+  
+
+  showMyDeck(event) {}
+
+  showMyExtraDeck(event) {}
+
+  showMyGraveyard(event) {}
+
+  showMyExile(event) {}
+
+  showOpponentDeck(event) {}
+  
+  showOpponentExtraDeck(event) {}
+
+  showOpponentGraveyard(event) {}
+
+  showOpponentExile(event) {}
 
 }

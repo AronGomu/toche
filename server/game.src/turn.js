@@ -10,39 +10,52 @@ class Phase {
 
 class Turn {
 
-  hasTurnPlayer;
-  hasPriorityPlayer;
+  game;
+
+  hasTurnPlayerBool;
+  hasPriorityPlayerBool;
+  beginningPhaseBool = false;
 
 	phases;
   phase;
 
-  constructor(hasTurnPlayer) {
+  constructor(game) {
+    this.game = game;
+
     let drawPhase = new Phase("draw", null);
     let main1Phase = new Phase("main1", null); 
-    let battlePhase = new Phase("battle", null); 
+    let beginCombatPhase = new Phase("begin combat", null);
+    let declaringAttackersPhase = new Phase("declaring attackers", null);
+    let declaringBlockersPhase = new Phase("declaring blockers", null);
+    let damagePhase = new Phase("damage", null); 
     let main2Phase = new Phase("main2", null); 
     let endPhase = new Phase("end", null);
+
     drawPhase.next = main1Phase;
-    main1Phase.next = battlePhase;
-    battlePhase.next = main2Phase;
+    main1Phase.next = beginCombatPhase;
+    beginCombatPhase.next = declaringAttackersPhase;
+    declaringAttackersPhase.next = declaringBlockersPhase;
+    declaringBlockersPhase.next = damagePhase;
+    damagePhase.next = main2Phase;
     main2Phase.next = endPhase;
     endPhase.next = drawPhase;
-    this.phases = [drawPhase,main1Phase,battlePhase,main2Phase,endPhase];
+    this.phases = [drawPhase,main1Phase,beginCombatPhase,declaringAttackersPhase,declaringBlockersPhase,damagePhase,main2Phase,endPhase];
     this.phase = this.phases[0];
   }
 
   nextPhase() {
+    this.beginningPhaseBool = true;
     if (this.phase.phaseNameString == "end") {
-      this.hasTurnPlayer = this.hasTurnPlayer.opponentPlayer;
-      this.hasTurnPlayer.haveTurnBool = true;
-      this.hasTurnPlayer.opponentPlayer.haveTurnBool = false;
+      this.hasTurnPlayerBool = this.hasTurnPlayerBool.opponentPlayer;
+      this.hasTurnPlayerBool.haveTurnBool = true;
+      this.hasTurnPlayerBool.opponentPlayer.haveTurnBool = false;
     }
     else {
-      this.hasPriorityPlayer = this.hasPriorityPlayer.opponentPlayer;
+      this.hasPriorityPlayerBool = this.hasPriorityPlayerBool.opponentPlayer;
     }
     this.phase = this.phase.next;
-    this.hasTurnPlayer.havePriorityBool = true;
-    this.hasTurnPlayer.opponentPlayer.havePriorityBool = false;
+    this.hasTurnPlayerBool.havePriorityBool = true;
+    this.hasTurnPlayerBool.opponentPlayer.havePriorityBool = false;
   }
 
   checkIfPlayable(card, isStackEmptyBool, havePriorityBool) {
