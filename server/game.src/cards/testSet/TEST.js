@@ -10,14 +10,14 @@ class TEST extends Card {
 		this.factionString = "Tempérant";
 		this.nameString = "Médiatrice des éléments";
 		this.levelInt = 0;
-		this.manacostString = "U";
+		this.manacostString = "UU";
 		this.typeStringArray = ["Creature"];
 		this.archetypeStringArray = ["Inia"];
 		this.subtypeStringArray = ["Inion"];
 		this.attackInt = 4000;
 		this.powerInt = 1;
 		this.instantSpeedPlayableBool = true;
-		this.imgUrlString = "TEST.png";
+		this.imgUrlString = "arts/TEST.png";
 	}
 
 	

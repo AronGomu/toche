@@ -25,18 +25,29 @@ export class GameComponent implements OnInit {
 
   public game: Game;
 
-  // img sizes data
-  private originalImgHeight: number = 616;
-  private originalImgWidth: number = 449;
-  
-  private originalCardbackHeight: number = 703;
-  private originalCardbackWidth: number = 502;
+  public TestCardName: string = "Test Maboi le Monstrueux";
 
+  public cardToPreview;
+
+  // img sizes data
+  private originalCardHeight: number = 1047;
+  private originalCardWidth: number = 747;
+
+  public cardPreviewHeight: number = this.originalCardHeight/2;
+  public cardPreviewWidth: number = this.originalCardWidth/2;
+
+  public cardNamePaddingBottomPreview: number = this.cardPreviewHeight/100*4;
+  public cardNamePaddingRightPreview: number = this.cardPreviewWidth/100*25;
+  
+2
   public imgHeight: number;
   public imgWidth: number;
 
-  public cardbackHeight: number;
-  public cardbackWidth: number;
+  public cardHeight: number;
+  public cardWidth: number;
+
+  public cardNamePaddingRight: number;
+  public cardNamePaddingBottom: number;
 
   // img hover
   public isHover: boolean = false;
@@ -108,8 +119,8 @@ export class GameComponent implements OnInit {
 
     this.setImgSize();
 
-    console.log("cardbackHeight :" + this.cardbackHeight);
-    console.log("cardbackWidth :" + this.cardbackWidth);
+    console.log("cardHeight :" + this.cardHeight);
+    console.log("cardWidth :" + this.cardWidth);
   }
 
   // Receivers
@@ -146,6 +157,8 @@ export class GameComponent implements OnInit {
     this.socketService.socket.on("fetchGameStateReceiver", (data) => {
       console.log("Receive fetchGameState");console.log(data);
       this.game.setGameState(data);
+      console.log("ma hand");
+      console.log(this.game.me.hand);
     });
   }
 
@@ -196,32 +209,39 @@ export class GameComponent implements OnInit {
 
   setImgSize() {
     this.imgHeight = window.innerHeight/6;
-    this.imgWidth = (this.imgHeight * this.originalImgWidth) / this.originalImgHeight;
+    this.imgWidth = (this.imgHeight * this.originalCardWidth) / this.originalCardHeight;
 
-    this.cardbackHeight = window.innerHeight/6;
-    this.cardbackWidth = (this.cardbackHeight * this.originalCardbackWidth) / this.originalCardbackHeight;
+    this.cardHeight = window.innerHeight/6;
+    this.cardWidth = (this.cardHeight * this.originalCardWidth) / this.originalCardHeight;
+
+    this.cardNamePaddingRight = this.cardWidth/100*25;
+    this.cardNamePaddingBottom = this.cardHeight/100*5;
+
   }
 
   onResize(event){
     this.setImgSize();
   }
 
-  mouseEnterCardImg(event) {
-    this.xPosMouse = <number><unknown>event.clientX + this.cardbackWidth;
+  mouseEnterCardImg(event, cardInGameId: number) {
+    this.cardToPreview = this.game.getCardFromInGameId(cardInGameId);
+    this.xPosMouse = <number><unknown>event.clientX + this.cardWidth;
     let test: number = <number><unknown>this.xPosMouse;
-    console.log(test);
-    if (this.xPosMouse > window.innerWidth - this.originalImgWidth) {
-      this.xPosMouse = window.innerWidth - this.originalImgWidth;
+    if (this.xPosMouse > window.innerWidth - this.originalCardWidth) {
+      this.xPosMouse = window.innerWidth - this.originalCardWidth;
     }
     this.yPosMouse = <number><unknown>event.clientY;
-    if (this.yPosMouse > window.innerHeight - this.originalImgHeight) {
-      this.yPosMouse = window.innerHeight - this.originalImgHeight;
+    if (this.yPosMouse > window.innerHeight - this.cardPreviewHeight) {
+      this.yPosMouse = window.innerHeight - this.cardPreviewHeight;
+      if (this.yPosMouse < 0 ) {
+        //this.yPosMouse = 0;
+      }
     }
     this.imgUrl = event.target.currentSrc;
     this.isHover = true;
   }
 
-  mouseLeaveCardImg(event) {
+  mouseLeaveCardImg(event, cardId: number) {
     this.isHover = false;
     this.imgUrl = null;
   }

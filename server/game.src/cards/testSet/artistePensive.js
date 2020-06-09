@@ -15,7 +15,7 @@ class ArtistePensive extends Card {
 		this.attackInt = 2000;
 		this.powerInt = 1;
 		this.instantSpeedPlayableBool = false;
-		this.imgUrlString = "Artiste Pensive.jpg";
+		this.imgUrlString = "arts/Artiste Pensive.jpg";
 
 	}
 }

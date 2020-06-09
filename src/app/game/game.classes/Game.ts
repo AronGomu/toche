@@ -3,7 +3,11 @@ import { GameInfo } from 'src/app/classes/gameInfo';
 import { User } from 'src/app/classes/user';
 import { Turn } from './Turn';
 import { Card } from 'src/app/classes/card';
+
+import { CardPrinterVariables } from "./../CardPrinterVariables";
 export class Game {
+
+  private cardPrinterVariables: CardPrinterVariables = new CardPrinterVariables();
 
   public myselfUser: User;
   public opponentUser: User;
@@ -123,6 +127,11 @@ export class Game {
       }
     }
 
+    // Add Verifiers for
+    this.me.hand.forEach(card => {
+      card["manacostVerifier"] = this.cardPrinterVariables.setManacostVerifierBoolArray(card.manacostString);
+    });
+
     this.updateAllCards();
   }
 
@@ -183,7 +192,6 @@ export class Game {
   getCardFromInGameId(InGameId: number) {
     for (let i = 0; i < this.allCards.length; i++) {
       if (this.allCards[i].inGameIdInt == InGameId) {
-        console.log("FOUND CARD");
         console.log(this.allCards[i]);
         return this.allCards[i];
       }

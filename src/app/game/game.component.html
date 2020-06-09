@@ -1,7 +1,18 @@
+
 <!-- Row 1 -->
 
 <div *ngIf="isHover" style="position: absolute;" [style.left.px]=xPosMouse [style.top.px]=yPosMouse>
-	<img [src]=imgUrl>
+	<div style="position: relative;">
+
+		<!-- color + style -->
+		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardPreviewHeight [width]=cardPreviewWidth>
+	
+		<!-- manacost -->		
+		<img *ngIf="cardToPreview.manacostVerifier[0].blue" src="./../../assets/image/cards/mana-blue-x1.png" style="position: absolute;" [height]=cardPreviewHeight [width]=cardPreviewWidth>
+
+		<!-- Card name -->
+	<span style="position: absolute; color: white; font-size: 15px;" [style.top.px]=cardNamePaddingBottomPreview [style.left.px]=cardNamePaddingRightPreview >{{cardToPreview.nameString}}</span>
+	</div>
 </div>
 
 <!-- Show username, user turn and buttons to pass priority -->
@@ -16,33 +27,32 @@
 <!-- ROW containing OPP EXTRA DECK + HAND + DECK -->
 <!-- /////////////////////////////////////// -->
 
-<!-- Show your graveyard pile, clicking on it will show the entire grave -->
+<!-- Show your graveyard pile, clicking on it will show the entire grave (not yet tho) -->
 <div class="row">
 
 	<div class="col s1 imgbox">
 		<div>
 			<img class="cardback"
 				src="../../assets/image/cards/cardback.png"
-				[height]=cardbackHeight
-				[width]=cardbackWidth
+				[height]=cardHeight
+				[width]=cardWidth
 				(click)="showOpponentExtraDeck" 
 				>
 		</div>
 	</div>
 
-	<!-- Show your hand -->
+	<!-- Show hand -->
 	<div class="col s10 imgbox">
 		<div class="row">
 			<a *ngFor="let card of game.opponent.hand">
-
 				<!-- Playable cards, can't do anything except playing them -->
 				<img *ngIf="card.playableBool" class="playable"
 							src="../../assets/image/cards/{{card.imgUrlString}}"
 							id="{{card.inGameIdInt}}" 
 							[height]=imgHeight 
 							[width]=imgWidth 
-							(mouseenter)="mouseEnterCardImg($event)" 
-							(mouseleave)="mouseLeaveCardImg($event)"
+							(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+							(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 							(click)="playCard($event)"
 				>
 
@@ -52,8 +62,8 @@
 						id="{{card.inGameIdInt}}" 
 						[height]=imgHeight 
 						[width]=imgWidth 
-						(mouseenter)="mouseEnterCardImg($event)" 
-						(mouseleave)="mouseLeaveCardImg($event)"
+						(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+						(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					>
 
 				<!-- Not Playable cards but selectable but not selected -->
@@ -62,8 +72,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectCard($event)"
 			>
 
@@ -73,8 +83,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
 			</a>
 		</div>
@@ -83,25 +93,71 @@
 	<!-- Show your deck pile, clicking on it will show the entire deck -->
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="!game.opponent.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="!game.opponent.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
 			<img *ngIf="game.opponent.isTopCardFromDeckRevealed" class="" 
 				src="../../assets/image/cards/{{game.opponent.topCardFromDeck.imgUrlString}}"
 				id="{{game.opponent.topCardFromDeck.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event,null)" 
+				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyDeck($event)"
 			>
 		</div>
 	</div>
 </div>
 
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!--                     CARD TEST                        -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<a *ngFor="let card of game.me.hand">
+	<div style="position: relative;" (mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" (mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)">
+		<!-- User Interaction -->
+
+
+		<!-- Color -->
+		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardHeight [width]=cardWidth>
+
+		<!-- Manacost -->
+		<img src="./../../assets/image/cards/mana-blue-x1.png" style="position: absolute;" [height]=cardHeight [width]=cardWidth>
+
+		<!-- Card name -->
+		<span style="position: absolute; color: white; font-size: 6px;" [style.top.px]=cardNamePaddingBottom [style.left.px]=cardNamePaddingRight >{{card.nameString}}</span>
+
+	</div>
+</a>
+
+
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!--                     CARD TEST                        -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+<!-- //////////////////////////////////////////////////// -->
+
 
 
 <!-- /////////////////////////////////////// -->
 <!-- ROW containing OPPONENT FIELD + GRAVEYARD -->
 <!-- /////////////////////////////////////// -->
+
 
 <div class="row">
 
@@ -116,8 +172,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
 
 				<!-- Show a selectable card -->
@@ -126,8 +182,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
 			>
 
@@ -137,8 +193,8 @@
 				id="{{card.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
 			>
 
@@ -148,14 +204,14 @@
 
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="game.opponent.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="game.opponent.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
 			<img *ngIf="!game.opponent.isGraveyardEmpty" class="" 
 				src="../../assets/image/cards/{{game.opponent.lastCardFromGraveyard.imgUrlString}}"
 				id="{{game.opponent.lastCardFromGraveyard.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event,null)" 
+				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyGraveyard($event)"
 			>
 		</div>
@@ -178,8 +234,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
 
 				<!-- Show a selectable card -->
@@ -188,8 +244,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
 			>
 
@@ -199,8 +255,8 @@
 				id="{{card.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
 			>
 			</a>
@@ -226,8 +282,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
 
 				<!-- Show a selectable card -->
@@ -236,8 +292,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
 			>
 
@@ -247,8 +303,8 @@
 				id="{{card.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
 			>
 
@@ -259,14 +315,14 @@
 
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="game.me.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="game.me.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
 			<img *ngIf="!game.me.isGraveyardEmpty" class="" 
 				src="../../assets/image/cards/{{game.me.lastCardFromGraveyard.imgUrlString}}"
 				id="{{game.me.lastCardFromGraveyard.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event,null)" 
+				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyGraveyard($event)"
 			>
 		</div>
@@ -284,8 +340,8 @@
 		<div>
 			<img class="cardback"
 				src="../../assets/image/cards/cardback.png"
-				[height]=cardbackHeight
-				[width]=cardbackWidth
+				[height]=cardHeight
+				[width]=cardWidth
 				(click)="showMyExtraDeck" 
 				>
 		</div>
@@ -302,8 +358,8 @@
 							id="{{card.inGameIdInt}}" 
 							[height]=imgHeight 
 							[width]=imgWidth 
-							(mouseenter)="mouseEnterCardImg($event)" 
-							(mouseleave)="mouseLeaveCardImg($event)"
+							(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+							(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 							(click)="playCard($event)"
 				>
 
@@ -313,8 +369,8 @@
 						id="{{card.inGameIdInt}}" 
 						[height]=imgHeight 
 						[width]=imgWidth 
-						(mouseenter)="mouseEnterCardImg($event)" 
-						(mouseleave)="mouseLeaveCardImg($event)"
+						(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+						(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					>
 
 				<!-- Not Playable cards but selectable but not selected -->
@@ -323,8 +379,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectCard($event)"
 			>
 
@@ -334,8 +390,8 @@
 					id="{{card.inGameIdInt}}" 
 					[height]=imgHeight 
 					[width]=imgWidth 
-					(mouseenter)="mouseEnterCardImg($event)" 
-					(mouseleave)="mouseLeaveCardImg($event)"
+					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
+					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
 			</a>
 		</div>
@@ -344,14 +400,14 @@
 	<!-- Show your deck pile, clicking on it will show the entire deck -->
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="!game.me.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardbackHeight [width]=cardbackWidth>
+			<img *ngIf="!game.me.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
 			<img *ngIf="game.me.isTopCardFromDeckRevealed" class="" 
 				src="../../assets/image/cards/{{game.me.topCardFromDeck.imgUrlString}}"
 				id="{{game.me.topCardFromDeck.inGameIdInt}}" 
 				[height]=imgHeight 
 				[width]=imgWidth 
-				(mouseenter)="mouseEnterCardImg($event)" 
-				(mouseleave)="mouseLeaveCardImg($event)"
+				(mouseenter)="mouseEnterCardImg($event,null)" 
+				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyDeck($event)"
 			>
 		</div>
