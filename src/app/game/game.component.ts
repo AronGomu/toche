@@ -9,6 +9,7 @@ import { GameInfo } from '../classes/gameInfo';
 import { Deck } from '../classes/deck';
 import { Card } from '../classes/card';
 import { Game } from './game.classes/Game';
+import { CardPrinterVariables } from "./CardPrinterVariables";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -23,31 +24,12 @@ import { Game } from './game.classes/Game';
 })
 export class GameComponent implements OnInit {
 
+  public cardPrinterVariables = new CardPrinterVariables();
+
   public game: Game;
 
   public TestCardName: string = "Test Maboi le Monstrueux";
 
-  public cardToPreview;
-
-  // img sizes data
-  private originalCardHeight: number = 1047;
-  private originalCardWidth: number = 747;
-
-  public cardPreviewHeight: number = this.originalCardHeight/2;
-  public cardPreviewWidth: number = this.originalCardWidth/2;
-
-  public cardNamePaddingBottomPreview: number = this.cardPreviewHeight/100*4;
-  public cardNamePaddingRightPreview: number = this.cardPreviewWidth/100*25;
-  
-2
-  public imgHeight: number;
-  public imgWidth: number;
-
-  public cardHeight: number;
-  public cardWidth: number;
-
-  public cardNamePaddingRight: number;
-  public cardNamePaddingBottom: number;
 
   // img hover
   public isHover: boolean = false;
@@ -93,14 +75,14 @@ export class GameComponent implements OnInit {
       let myself = new User("Spikey",null,true,true);
       let opponent = new User("Johnson",null,true,true);
       let gameInfo = new GameInfo(myself,opponent,true,false,"Spikey & Johnson game",true);
-      this.game = new Game(myself,opponent,gameInfo);
+      this.game = new Game(this.cardPrinterVariables, myself,opponent,gameInfo);
       console.log("INIT");
       console.log(this.game.opponentUser);
     } else {
       let myself = new User("Johnson",null,true,true);
       let opponent = new User("Spikey",null,true,true);
       let gameInfo = new GameInfo(myself,opponent,true,false,"Spikey & Johnson game",true);
-      this.game = new Game(myself,opponent,gameInfo);
+      this.game = new Game(this.cardPrinterVariables, myself,opponent,gameInfo);
     }
     
 
@@ -119,8 +101,8 @@ export class GameComponent implements OnInit {
 
     this.setImgSize();
 
-    console.log("cardHeight :" + this.cardHeight);
-    console.log("cardWidth :" + this.cardWidth);
+    console.log("cardHeight :" + this.cardPrinterVariables.cardHeight);
+    console.log("cardWidth :" + this.cardPrinterVariables.cardWidth);
   }
 
   // Receivers
@@ -208,14 +190,14 @@ export class GameComponent implements OnInit {
   }
 
   setImgSize() {
-    this.imgHeight = window.innerHeight/6;
-    this.imgWidth = (this.imgHeight * this.originalCardWidth) / this.originalCardHeight;
+    this.cardPrinterVariables.imgHeight = window.innerHeight/6;
+    this.cardPrinterVariables.imgWidth = (this.cardPrinterVariables.imgHeight * this.cardPrinterVariables.originalCardWidth) / this.cardPrinterVariables.originalCardHeight;
 
-    this.cardHeight = window.innerHeight/6;
-    this.cardWidth = (this.cardHeight * this.originalCardWidth) / this.originalCardHeight;
+    this.cardPrinterVariables.cardHeight = window.innerHeight/6;
+    this.cardPrinterVariables.cardWidth = (this.cardPrinterVariables.cardHeight * this.cardPrinterVariables.originalCardWidth) / this.cardPrinterVariables.originalCardHeight;
 
-    this.cardNamePaddingRight = this.cardWidth/100*25;
-    this.cardNamePaddingBottom = this.cardHeight/100*5;
+    this.cardPrinterVariables.cardNamePaddingRight = this.cardPrinterVariables.cardWidth/100*25;
+    this.cardPrinterVariables.cardNamePaddingBottom = this.cardPrinterVariables.cardHeight/100*5;
 
   }
 
@@ -224,15 +206,15 @@ export class GameComponent implements OnInit {
   }
 
   mouseEnterCardImg(event, cardInGameId: number) {
-    this.cardToPreview = this.game.getCardFromInGameId(cardInGameId);
-    this.xPosMouse = <number><unknown>event.clientX + this.cardWidth;
+    this.cardPrinterVariables.cardToPreview = this.game.getCardFromInGameId(cardInGameId);
+    this.xPosMouse = <number><unknown>event.clientX + this.cardPrinterVariables.cardWidth;
     let test: number = <number><unknown>this.xPosMouse;
-    if (this.xPosMouse > window.innerWidth - this.originalCardWidth) {
-      this.xPosMouse = window.innerWidth - this.originalCardWidth;
+    if (this.xPosMouse > window.innerWidth - this.cardPrinterVariables.originalCardWidth) {
+      this.xPosMouse = window.innerWidth - this.cardPrinterVariables.originalCardWidth;
     }
     this.yPosMouse = <number><unknown>event.clientY;
-    if (this.yPosMouse > window.innerHeight - this.cardPreviewHeight) {
-      this.yPosMouse = window.innerHeight - this.cardPreviewHeight;
+    if (this.yPosMouse > window.innerHeight - this.cardPrinterVariables.cardPreviewHeight) {
+      this.yPosMouse = window.innerHeight - this.cardPrinterVariables.cardPreviewHeight;
       if (this.yPosMouse < 0 ) {
         //this.yPosMouse = 0;
       }

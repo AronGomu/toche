@@ -15,6 +15,7 @@ class Card {
 	powerInt;
 	instantSpeedPlayableBool;
 	imgUrlString;
+	artistNameString;
 
 	inGameIdInt;
 	controllerPlayerUsernameString;
@@ -53,6 +54,7 @@ class Card {
 			this.powerInt = null;
 			this.instantSpeedPlayableBool = null;
 			this.imgUrlString = null;
+			this.artistNameString = null;
 
 			this.inGameIdInt = null;
 			this.controllerPlayerUsernameString = null;
@@ -78,6 +80,7 @@ class Card {
 			this.powerInt = card.powerInt;
 			this.instantSpeedPlayableBool = card.instantSpeedPlayableBool;
 			this.imgUrlString = card.imgUrlString;
+			this.artistNameString = card.artistNameString;
 			
 			this.inGameIdInt = card.inGameIdInt;
 			this.controllerPlayerUsernameString = card.controllerPlayerUsernameString;

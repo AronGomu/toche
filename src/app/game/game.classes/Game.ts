@@ -7,7 +7,7 @@ import { Card } from 'src/app/classes/card';
 import { CardPrinterVariables } from "./../CardPrinterVariables";
 export class Game {
 
-  private cardPrinterVariables: CardPrinterVariables = new CardPrinterVariables();
+  private cardPrinterVariables: CardPrinterVariables;
 
   public myselfUser: User;
   public opponentUser: User;
@@ -34,7 +34,8 @@ export class Game {
 
   // CONSTRUCTOR
 
-  constructor(myselfUser: User, opponentUser: User, gameInfo: GameInfo) {
+  constructor(cardPrinterVariables: CardPrinterVariables, myselfUser: User, opponentUser: User, gameInfo: GameInfo) {
+    this.cardPrinterVariables = cardPrinterVariables;
     this.myselfUser = myselfUser;
     this.opponentUser = opponentUser;
     this.gameInfo = gameInfo;

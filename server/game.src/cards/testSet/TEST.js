@@ -8,16 +8,17 @@ class TEST extends Card {
 		this.idInt = 0;
 		this.colorString = "blue";
 		this.factionString = "Tempérant";
-		this.nameString = "Médiatrice des éléments";
+		this.nameString = "Briseclair test";
 		this.levelInt = 0;
-		this.manacostString = "UU";
+		this.manacostString = "2UUGGPP";
 		this.typeStringArray = ["Creature"];
 		this.archetypeStringArray = ["Inia"];
 		this.subtypeStringArray = ["Inion"];
 		this.attackInt = 4000;
 		this.powerInt = 1;
 		this.instantSpeedPlayableBool = true;
-		this.imgUrlString = "arts/TEST.png";
+		this.imgUrlString = "arts/Briseclair.png";
+		this.artistNameString = "Emperpep";
 	}
 
 	

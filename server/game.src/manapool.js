@@ -6,14 +6,14 @@ class Manapool {
 
 	colorlessManaInt;
 	blueManaInt;
-	blackManaInt;
+	purpleManaInt;
 
 	
 	constructor(player) {
 		this.player = player;
 		this.colorlessManaInt = 0;
 		this.blueManaInt = 0;
-		this.blackManaInt = 0;
+		this.purpleManaInt = 0;
 	}
 
 	addMana(manaString) {
@@ -28,7 +28,7 @@ class Manapool {
 			}
 
 			if (manaString.charAt(i) == "B") {
-				this.blackManaInt++;
+				this.purpleManaInt++;
 			}
 		}
 	}
@@ -54,8 +54,8 @@ class Manapool {
 			}
 
 			if (manaString.charAt(i) == "B") {
-				if (this.blackManaInt > 0) {
-					this.blackManaInt--;
+				if (this.purpleManaInt > 0) {
+					this.purpleManaInt--;
 				}
 				else {
 					return false;
@@ -71,11 +71,11 @@ class Manapool {
 
 		let toCheckColorlessManaInt = 0;
 		let toCheckBlueManaInt = 0;
-		let toCheckBlackManaInt = 0;
+		let toCheckPurpleManaInt = 0;
 
 		let tempColorlessManaInt = this.colorlessManaInt;
 		let tempBlueManaInt = this.blueManaInt;
-		let tempBlackManaInt = this.blackManaInt;
+		let tempPurpleManaInt = this.purpleManaInt;
 
 		for (let i = 0 ; i < manaString.length ; i++){
 			if (!isNaN(parseInt(manaString.charAt(i)))) {
@@ -86,8 +86,8 @@ class Manapool {
 				toCheckBlueManaInt++;
 			}
 
-			if (manaString.charAt(i) == "B") {
-				toCheckBlackManaInt++;
+			if (manaString.charAt(i) == "P") {
+				toCheckPurpleManaInt++;
 			}
 		}
 
@@ -95,27 +95,27 @@ class Manapool {
 
 		/*
 		console.log("BEFORE");
-		console.log("tempBlackManaInt : " + tempBlackManaInt);
-		console.log("toCheckBlackManaInt : " + toCheckBlackManaInt);
-		console.log("tempBlackManaInt : " + tempBlackManaInt);
+		console.log("tempPurpleManaInt : " + tempPurpleManaInt);
+		console.log("toCheckPurpleManaInt : " + toCheckPurpleManaInt);
+		console.log("tempPurpleManaInt : " + tempPurpleManaInt);
 		console.log("tempBlueManaInt : " + tempBlueManaInt);
 		*/
-		tempBlackManaInt -= toCheckBlackManaInt;
+		tempPurpleManaInt -= toCheckPurpleManaInt;
 		tempBlueManaInt -= toCheckBlueManaInt;
 
 		/*
 		console.log("AFTER");
-		console.log(tempBlackManaInt);
+		console.log(tempPurpleManaInt);
 		console.log(tempBlueManaInt);
 		*/
 
-		if (tempBlackManaInt < 0 || tempBlueManaInt < 0) {
+		if (tempPurpleManaInt < 0 || tempBlueManaInt < 0) {
 			//console.log("Pas assez de source coloré pour payer le cout");
 			return false;
 		}
 
 
-		let tempAllManaLeftInt = tempColorlessManaInt + tempBlackManaInt + tempBlueManaInt
+		let tempAllManaLeftInt = tempColorlessManaInt + tempPurpleManaInt + tempBlueManaInt
 
 		tempAllManaLeftInt -= toCheckColorlessManaInt;
 

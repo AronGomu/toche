@@ -4,14 +4,65 @@
 <div *ngIf="isHover" style="position: absolute;" [style.left.px]=xPosMouse [style.top.px]=yPosMouse>
 	<div style="position: relative;">
 
+		<!-- art -->
+		<img src="./../../assets/image/cards/{{cardPrinterVariables.cardToPreview.imgUrlString}}" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+
 		<!-- color + style -->
-		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardPreviewHeight [width]=cardPreviewWidth>
+		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
 	
 		<!-- manacost -->		
-		<img *ngIf="cardToPreview.manacostVerifier[0].blue" src="./../../assets/image/cards/mana-blue-x1.png" style="position: absolute;" [height]=cardPreviewHeight [width]=cardPreviewWidth>
+		<div *ngFor="let manacostVerifier of cardPrinterVariables.cardToPreview.manacostVerifier; let i = index" [attr.data-index]="i">
+			<img *ngIf="manacostVerifier.inco" src="./../../assets/image/cards/mana-inco-x{{i}}.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+			<!--
+				<img *ngIf="manacostVerifier.inco" src="./../../assets/image/cards/mana-inco-number-{{i}}.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+			-->
+			<img *ngIf="manacostVerifier.blue" src="./../../assets/image/cards/mana-blue-x{{i}}.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+			<img *ngIf="manacostVerifier.purple" src="./../../assets/image/cards/mana-purple-x{{i}}.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+			<img *ngIf="manacostVerifier.green" src="./../../assets/image/cards/mana-green-x{{i}}.png" style="position: absolute;" [height]=cardPrinterVariables.cardPreviewHeight [width]=cardPrinterVariables.cardPreviewWidth>
+		</div>
 
 		<!-- Card name -->
-	<span style="position: absolute; color: white; font-size: 15px;" [style.top.px]=cardNamePaddingBottomPreview [style.left.px]=cardNamePaddingRightPreview >{{cardToPreview.nameString}}</span>
+		<span style="position: absolute; color: white; font-size: 15px; white-space: nowrap;" [style.top.px]=cardPrinterVariables.cardNamePaddingBottomPreview [style.left.px]=cardPrinterVariables.cardNamePaddingRightPreview >{{cardPrinterVariables.cardToPreview.nameString}}</span>
+
+		<!-- Card types -->
+		<div style="position: absolute;" [style.top.px]=cardPrinterVariables.typesPaddingBottomPreview [style.left.px]=cardPrinterVariables.typesPaddingRightPreview>
+
+			<div *ngIf="cardPrinterVariables.cardToPreview.colorString === 'blue'" style="color: #6666ff; font-size: 15px; white-space: nowrap;">
+				<span *ngFor="let type of cardPrinterVariables.cardToPreview.typeStringArray" >{{type}} </span>
+				<span>- </span>
+				<span *ngFor="let archetype of cardPrinterVariables.cardToPreview.archetypeStringArray" >{{archetype}} </span>
+				<span>- </span>
+				<span *ngFor="let subtype of cardPrinterVariables.cardToPreview.subtypeStringArray" >{{subtype}}</span>
+			</div>
+
+			<div *ngIf="cardPrinterVariables.cardToPreview.colorString === 'purple'" style="color: #996699; font-size: 15px; white-space: nowrap;">
+				<span *ngFor="let type of cardPrinterVariables.cardToPreview.typeStringArray" >{{type}} </span>
+				<span>- </span>
+				<span *ngFor="let archetype of cardPrinterVariables.cardToPreview.archetypeStringArray" >{{archetype}} </span>
+				<span>- </span>
+				<span *ngFor="let subtype of cardPrinterVariables.cardToPreview.subtypeStringArray" >{{subtype}}</span>
+			</div>
+
+			<div *ngIf="cardPrinterVariables.cardToPreview.colorString === 'green'" style="color: #99cc99; font-size: 15px; white-space: nowrap;">
+				<span *ngFor="let type of cardPrinterVariables.cardToPreview.typeStringArray" >{{type}} </span>
+				<span>- </span>
+				<span *ngFor="let archetype of cardPrinterVariables.cardToPreview.archetypeStringArray" >{{archetype}} </span>
+				<span>- </span>
+				<span *ngFor="let subtype of cardPrinterVariables.cardToPreview.subtypeStringArray" >{{subtype}}</span>
+			</div>
+		
+			<div *ngIf="cardPrinterVariables.cardToPreview.colorString === 'void'" style="color:white; font-size: 15px; white-space: nowrap;">
+				<span *ngFor="let type of cardPrinterVariables.cardToPreview.typeStringArray" >{{type}} </span>
+				<span>- </span>
+				<span *ngFor="let archetype of cardPrinterVariables.cardToPreview.archetypeStringArray" >{{archetype}} </span>
+				<span>- </span>
+				<span *ngFor="let subtype of cardPrinterVariables.cardToPreview.subtypeStringArray" >{{subtype}}</span>
+			</div>
+		</div>
+
+		<!-- Artist name -->
+		<span style="position: absolute; color: white; font-size: 15px; white-space: nowrap;" [style.top.px]=cardPrinterVariables.artistNamePaddingBottomPreview [style.left.px]=cardPrinterVariables.artistNamePaddingRightPreview >{{cardPrinterVariables.cardToPreview.artistNameString}}</span>
+
 	</div>
 </div>
 
@@ -34,8 +85,8 @@
 		<div>
 			<img class="cardback"
 				src="../../assets/image/cards/cardback.png"
-				[height]=cardHeight
-				[width]=cardWidth
+				[height]=cardPrinterVariables.cardHeight
+				[width]=cardPrinterVariables.cardWidth
 				(click)="showOpponentExtraDeck" 
 				>
 		</div>
@@ -49,8 +100,8 @@
 				<img *ngIf="card.playableBool" class="playable"
 							src="../../assets/image/cards/{{card.imgUrlString}}"
 							id="{{card.inGameIdInt}}" 
-							[height]=imgHeight 
-							[width]=imgWidth 
+							[height]=cardPrinterVariables.imgHeight 
+							[width]=cardPrinterVariables.imgWidth 
 							(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 							(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 							(click)="playCard($event)"
@@ -60,8 +111,8 @@
 				<img *ngIf="!card.playableBool && !card.selectableBool" class=""
 						src="../../assets/image/cards/{{card.imgUrlString}}"
 						id="{{card.inGameIdInt}}" 
-						[height]=imgHeight 
-						[width]=imgWidth 
+						[height]=cardPrinterVariables.imgHeight 
+						[width]=cardPrinterVariables.imgWidth 
 						(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 						(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					>
@@ -70,8 +121,8 @@
 				<img *ngIf="!card.playableBool && card.selectableBool && !card.selectedBool" class="selectable"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectCard($event)"
@@ -81,8 +132,8 @@
 				<img *ngIf="!card.playableBool && card.selectableBool && card.selectedBool" class="selected"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
@@ -93,12 +144,12 @@
 	<!-- Show your deck pile, clicking on it will show the entire deck -->
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="!game.opponent.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
+			<img *ngIf="!game.opponent.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 			<img *ngIf="game.opponent.isTopCardFromDeckRevealed" class="" 
 				src="../../assets/image/cards/{{game.opponent.topCardFromDeck.imgUrlString}}"
 				id="{{game.opponent.topCardFromDeck.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event,null)" 
 				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyDeck($event)"
@@ -126,13 +177,13 @@
 
 
 		<!-- Color -->
-		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardHeight [width]=cardWidth>
+		<img src="./../../assets/image/cards/border-blue.png" style="position: absolute;" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 
 		<!-- Manacost -->
-		<img src="./../../assets/image/cards/mana-blue-x1.png" style="position: absolute;" [height]=cardHeight [width]=cardWidth>
+		<img src="./../../assets/image/cards/mana-blue-x1.png" style="position: absolute;" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 
 		<!-- Card name -->
-		<span style="position: absolute; color: white; font-size: 6px;" [style.top.px]=cardNamePaddingBottom [style.left.px]=cardNamePaddingRight >{{card.nameString}}</span>
+		<span style="position: absolute; color: white; font-size: 6px;" [style.top.px]=cardPrinterVariables.cardNamePaddingBottom [style.left.px]=cardPrinterVariables.cardNamePaddingRight >{{card.nameString}}</span>
 
 	</div>
 </a>
@@ -170,8 +221,8 @@
 				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
@@ -180,8 +231,8 @@
 				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
@@ -191,8 +242,8 @@
 			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
 				src="../../assets/image/cards/{{card.imgUrlString}}"
 				id="{{card.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
@@ -204,12 +255,12 @@
 
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="game.opponent.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
+			<img *ngIf="game.opponent.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 			<img *ngIf="!game.opponent.isGraveyardEmpty" class="" 
 				src="../../assets/image/cards/{{game.opponent.lastCardFromGraveyard.imgUrlString}}"
 				id="{{game.opponent.lastCardFromGraveyard.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event,null)" 
 				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyGraveyard($event)"
@@ -232,8 +283,8 @@
 				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
@@ -242,8 +293,8 @@
 				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
@@ -253,8 +304,8 @@
 			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
 				src="../../assets/image/cards/{{card.imgUrlString}}"
 				id="{{card.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
@@ -280,8 +331,8 @@
 				<img *ngIf="!card.selectableBool && !card.selectedBool" class=""
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
@@ -290,8 +341,8 @@
 				<img *ngIf="card.selectableBool && !card.selectedBool" class="selectable"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectFromField($event)"
@@ -301,8 +352,8 @@
 			<img *ngIf="!card.selectableBool && card.selectedBool" class="playable"
 				src="../../assets/image/cards/{{card.imgUrlString}}"
 				id="{{card.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 				(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				(click)="unselectFromField($event)"
@@ -315,12 +366,12 @@
 
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="game.me.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
+			<img *ngIf="game.me.isGraveyardEmpty" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 			<img *ngIf="!game.me.isGraveyardEmpty" class="" 
 				src="../../assets/image/cards/{{game.me.lastCardFromGraveyard.imgUrlString}}"
 				id="{{game.me.lastCardFromGraveyard.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event,null)" 
 				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyGraveyard($event)"
@@ -340,8 +391,8 @@
 		<div>
 			<img class="cardback"
 				src="../../assets/image/cards/cardback.png"
-				[height]=cardHeight
-				[width]=cardWidth
+				[height]=cardPrinterVariables.cardHeight
+				[width]=cardPrinterVariables.cardWidth
 				(click)="showMyExtraDeck" 
 				>
 		</div>
@@ -356,8 +407,8 @@
 				<img *ngIf="card.playableBool" class="playable"
 							src="../../assets/image/cards/{{card.imgUrlString}}"
 							id="{{card.inGameIdInt}}" 
-							[height]=imgHeight 
-							[width]=imgWidth 
+							[height]=cardPrinterVariables.imgHeight 
+							[width]=cardPrinterVariables.imgWidth 
 							(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 							(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 							(click)="playCard($event)"
@@ -367,8 +418,8 @@
 				<img *ngIf="!card.playableBool && !card.selectableBool" class=""
 						src="../../assets/image/cards/{{card.imgUrlString}}"
 						id="{{card.inGameIdInt}}" 
-						[height]=imgHeight 
-						[width]=imgWidth 
+						[height]=cardPrinterVariables.imgHeight 
+						[width]=cardPrinterVariables.imgWidth 
 						(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 						(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					>
@@ -377,8 +428,8 @@
 				<img *ngIf="!card.playableBool && card.selectableBool && !card.selectedBool" class="selectable"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 					(click)="selectCard($event)"
@@ -388,8 +439,8 @@
 				<img *ngIf="!card.playableBool && card.selectableBool && card.selectedBool" class="selected"
 					src="../../assets/image/cards/{{card.imgUrlString}}"
 					id="{{card.inGameIdInt}}" 
-					[height]=imgHeight 
-					[width]=imgWidth 
+					[height]=cardPrinterVariables.imgHeight 
+					[width]=cardPrinterVariables.imgWidth 
 					(mouseenter)="mouseEnterCardImg($event, card.inGameIdInt)" 
 					(mouseleave)="mouseLeaveCardImg($event, card.inGameIdInt)"
 				>
@@ -400,12 +451,12 @@
 	<!-- Show your deck pile, clicking on it will show the entire deck -->
 	<div class="col s1 imgbox">
 		<div>
-			<img *ngIf="!game.me.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardHeight [width]=cardWidth>
+			<img *ngIf="!game.me.isTopCardFromDeckRevealed" class="cardback" src="../../assets/image/cards/cardback.png" [height]=cardPrinterVariables.cardHeight [width]=cardPrinterVariables.cardWidth>
 			<img *ngIf="game.me.isTopCardFromDeckRevealed" class="" 
 				src="../../assets/image/cards/{{game.me.topCardFromDeck.imgUrlString}}"
 				id="{{game.me.topCardFromDeck.inGameIdInt}}" 
-				[height]=imgHeight 
-				[width]=imgWidth 
+				[height]=cardPrinterVariables.imgHeight 
+				[width]=cardPrinterVariables.imgWidth 
 				(mouseenter)="mouseEnterCardImg($event,null)" 
 				(mouseleave)="mouseLeaveCardImg($event,null)"
 				(click)="showMyDeck($event)"
